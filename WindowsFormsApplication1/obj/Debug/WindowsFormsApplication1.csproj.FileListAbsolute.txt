@@ -8,6 +8,5 @@ c:\users\ufficio tecnico\documents\visual studio 2015\Projects\WindowsFormsAppli
 c:\users\ufficio tecnico\documents\visual studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\System.Runtime.WindowsRuntime.dll
 c:\users\ufficio tecnico\documents\visual studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\System.Runtime.xml
 c:\users\ufficio tecnico\documents\visual studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\System.Runtime.InteropServices.WindowsRuntime.xml
-c:\users\ufficio tecnico\documents\visual studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csprojResolveAssemblyReference.cache
 c:\users\ufficio tecnico\documents\visual studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
 c:\users\ufficio tecnico\documents\visual studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb

@@ -1,0 +1,4 @@
+C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\OTADfu_Console.exe.config
+C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\OTADfu_Console.csprojResolveAssemblyReference.cache
+C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\OTADfu_Console.Properties.Resources.resources
+C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\OTADfu_Console.csproj.GenerateResource.Cache
