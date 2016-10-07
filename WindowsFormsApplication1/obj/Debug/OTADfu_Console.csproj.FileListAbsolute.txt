@@ -2,3 +2,11 @@ C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsAppli
 C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\OTADfu_Console.csprojResolveAssemblyReference.cache
 C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\OTADfu_Console.Properties.Resources.resources
 C:\Users\Ufficio Tecnico\Documents\Visual Studio 2015\Projects\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\OTADfu_Console.csproj.GenerateResource.Cache
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\bin\Debug\OTADfu_Console.exe.config
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\obj\Debug\OTADfu_Console.csprojResolveAssemblyReference.cache
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\obj\Debug\OTADfu_Console.Properties.Resources.resources
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\obj\Debug\OTADfu_Console.csproj.GenerateResource.Cache
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\bin\Debug\OTADfu_Console.exe
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\bin\Debug\OTADfu_Console.pdb
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\obj\Debug\OTADfu_Console.exe
+E:\nrf52_bledfu_win_console\WindowsFormsApplication1\obj\Debug\OTADfu_Console.pdb

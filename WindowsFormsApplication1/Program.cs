@@ -1,4 +1,5 @@
 ﻿using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
 using System;
 using System.Threading.Tasks;
@@ -15,13 +16,14 @@ namespace WindowsFormsApplication1
             this.init();
         }
         StreamWriter logFile=null;
+        String logPath = @"C:\logs\";
         private void init() {
             String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             String filename = "[" + time + "].txt";
             Console.WriteLine(filename);
             try
             {
-                logFile = new StreamWriter("F:\\Primo\\logs\\" + filename, true);
+                logFile = new StreamWriter(logPath + filename, true);
             }
             catch (Exception ex)
             {
@@ -46,23 +48,31 @@ namespace WindowsFormsApplication1
 
         private async  Task readevices()
         {
-            Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service
+            //Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
+            Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
             String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
             String[] param = new string[] { "System.Devices.ContainerId" };
             this.log("TEST1", "");
             DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(service, param);
-            //Thread.Sleep(2000);
+            Thread.Sleep(2000);
             if (devices.Count>0) 
             {
-                foreach (var device in devices)
+                foreach (DeviceInformation device in devices)
                 {
-                    Console.WriteLine(device.Name + " " + device.Properties);
-                    this.log(device.Name, "Main");                    
+                    var deviceAddress = "not available";
+                    //Console.WriteLine(device.Name + " " + device.Id);                    
+                    if (device.Id.Contains("_") && device.Id.Contains("#"))
+                        deviceAddress = device.Id.Split('_')[1].Split('#')[0];
+                    Console.WriteLine(device.Name + " " + deviceAddress);
+                    //foreach (var prop in device.Properties) {
+                    //    Console.WriteLine(prop.Key + " " + prop.Value);                        
+                    //}
+                    this.log(device.Name, "Main");
+                    
                 }
             }
             else
             {
-                Console.WriteLine("No devices");
                 this.log("No devices", "Test");                
             }
             this.log("TEST2", "");
@@ -123,6 +133,7 @@ namespace WindowsFormsApplication1
             var test = new Test();
             var task = test.Test1();
 
+            Console.WriteLine("Press a key to close");
             Console.ReadLine();
         }
     }

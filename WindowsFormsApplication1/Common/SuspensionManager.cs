@@ -68,7 +68,7 @@ namespace SDKTemplate.Common
                         SaveFrameNavigationState(frame);
                     }
                 }
-
+                /*
                 // Serialize the session state synchronously to avoid asynchronous access to shared
                 // state
                 MemoryStream sessionData = new MemoryStream();
@@ -81,7 +81,7 @@ namespace SDKTemplate.Common
                 {
                     sessionData.Seek(0, SeekOrigin.Begin);
                     await sessionData.CopyToAsync(fileStream);
-                }
+                }*/
             }
             catch (Exception e)
             {
@@ -111,8 +111,8 @@ namespace SDKTemplate.Common
                 using (IInputStream inStream = await file.OpenSequentialReadAsync())
                 {
                     // Deserialize the Session State
-                    DataContractSerializer serializer = new DataContractSerializer(typeof(Dictionary<string, object>), _knownTypes);
-                    _sessionState = (Dictionary<string, object>)serializer.ReadObject(inStream.AsStreamForRead());
+                    //DataContractSerializer serializer = new DataContractSerializer(typeof(Dictionary<string, object>), _knownTypes);
+                    //_sessionState = (Dictionary<string, object>)serializer.ReadObject(inStream.AsStreamForRead());
                 }
 
                 // Restore any registered frames to their saved state

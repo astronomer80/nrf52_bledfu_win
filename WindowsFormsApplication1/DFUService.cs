@@ -479,8 +479,8 @@ namespace WindowsFormsApplication1
                 //characteristic.ProtectionLevel = GattProtectionLevel.EncryptionRequired; //Not necessary
 
                 // Register the event handler for receiving notifications
-                //controlPoint.ValueChanged += controlPoint_ValueChanged;
-                controlPoint.add_ValueChanged(controlPoint_ValueChanged);
+                controlPoint.ValueChanged += controlPoint_ValueChanged;
+               // controlPoint.add_ValueChanged(controlPoint_ValueChanged);
 
                 // In order to avoid unnecessary communication with the device, determine if the device is already 
                 // correctly configured to send notifications.
@@ -880,8 +880,8 @@ namespace WindowsFormsApplication1
             watcher = PnpObject.CreateWatcher(PnpObjectType.DeviceContainer,
                 new string[] { "System.Devices.Connected" }, String.Empty);
 
-            //watcher.Updated += DeviceConnection_Updated;
-            watcher.add_Updated(DeviceConnection_Updated);
+            watcher.Updated += DeviceConnection_Updated;
+            //watcher.add_Updated(DeviceConnection_Updated);
             watcher.Start();
         }
 
@@ -920,8 +920,8 @@ namespace WindowsFormsApplication1
         private async Task StartFirmwareUpdate()
         {
             controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint)).FirstOrDefault();
-            //controlPoint.ValueChanged += controlPoint_ValueChanged;
-            controlPoint.add_ValueChanged(controlPoint_ValueChanged);
+            controlPoint.ValueChanged += controlPoint_ValueChanged;
+            //controlPoint.add_ValueChanged(controlPoint_ValueChanged);
             if (await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
             {
                 Console.WriteLine("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings and reconnect it.");
