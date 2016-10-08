@@ -11,8 +11,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage;
 using Common.Service.GattService;
 using Common.Utility;
+using Windows.Foundation;
 
-namespace WindowsFormsApplication1
+namespace OTADFUApplication
 {
     public enum DeviceFirmwareUpdateStatusEnum
     {
@@ -35,18 +36,9 @@ namespace WindowsFormsApplication1
         //Sending Errors
         DFU_ERROR
     }
-
-
-
-
+    
     public class DFUService
     {
-        public static String DFUService_UUID = "00001530-1212-efde-1523-785feabcd123";
-        public static String DFUControlPoint = "00001531-1212-efde-1523-785feabcd123";
-        public static String DFUPacket = "00001532-1212-efde-1523-785feabcd123";
-        public static String DFUVersion = "00001534-1212-efde-1523-785feabcd123";
-
-
         #region Properties
         private GattDeviceService service { get; set; }
         private GattCharacteristic controlPoint { get; set; }
@@ -63,8 +55,13 @@ namespace WindowsFormsApplication1
         public static short NUMBER_OF_PACKET_AT_TIME = 10;
         private int sentTimes = 0;
         private int sendedBytes = 0;
+        
+        public static String DFUService_UUID = "00001530-1212-efde-1523-785feabcd123";
+        public static String DFUControlPoint = "00001531-1212-efde-1523-785feabcd123";
+        public static String DFUPacket = "00001532-1212-efde-1523-785feabcd123";
+        public static String DFUVersion = "00001534-1212-efde-1523-785feabcd123";
         #endregion
-
+        
         private CoreDispatcher dispatcher { get; set; }
 
         // Make sure to check your device's documentation to find out how many characteristics your specific device has.
@@ -81,7 +78,6 @@ namespace WindowsFormsApplication1
 
         private PnpObjectWatcher watcher;
         private String deviceContainerId;
-        IStorageFolder folder;
 
         DeviceFirmwareUpdateControlPointCharacteristics deviceFirmwareUpdateControlPointCharacteristics = new DeviceFirmwareUpdateControlPointCharacteristics();
 
@@ -124,10 +120,8 @@ namespace WindowsFormsApplication1
         {
             //App.Current.Suspending += App_Suspending;
             //App.Current.Resuming += App_Resuming;
-
-            folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-
-            StartDeviceConnectionWatcher();
+            
+            //StartDeviceConnectionWatcher();
         }
 
         internal async void LoadDFUSettings()
@@ -159,7 +153,7 @@ namespace WindowsFormsApplication1
 
         async void deviceFirmwareUpdateService_PacketReceiptConfirmed(int sizeOfBytesSent, int totalFirmwareLength, string messageType, string messageData)
         {
-            DFUService.log("deviceFirmwareUpdateService_PacketReceiptConfirmed", "Status");
+            log("deviceFirmwareUpdateService_PacketReceiptConfirmed", "Status");
             if (messageType != string.Empty)
             {
                 await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.DFU_ERROR, 0, messageType, messageData);
@@ -170,7 +164,7 @@ namespace WindowsFormsApplication1
 
         async void deviceFirmwareUpdateService_DeviceFirmwareUpdateComplete(bool IsComplete)
         {
-            DFUService.log("deviceFirmwareUpdateService_DeviceFirmwareUpdateComplete:" + IsComplete, "Status");
+            log("deviceFirmwareUpdateService_DeviceFirmwareUpdateComplete:" + IsComplete, "Status");
 
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
@@ -178,9 +172,7 @@ namespace WindowsFormsApplication1
             //await UpdatePogressBar(100);
             await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.SENDING_COMPLETE);
         }
-
-
-
+        
         private string FILES_NOT_CHOSEN = "File not present";
         private string DEVICE_NOT_CONNECTED = "Please connect your device";
         private string SERVICES_NOT_AVAILABLE = "Try to re-pair the device";
@@ -312,8 +304,9 @@ namespace WindowsFormsApplication1
         /// </summary>
         /// <param name="device"></param>
         /// <returns></returns>
-        public async Task InitializeServiceAsync(DeviceInformation device)
+        public async Task InitializeServiceAsync(DeviceInformation device, Program program)
         {
+            this.mainProgram = program;
             try
             {
                 deviceContainerId = "{" + device.Properties["System.Devices.ContainerId"] + "}";
@@ -341,27 +334,9 @@ namespace WindowsFormsApplication1
         /// </summary>
         /// <param name="data"></param>
         /// <param name="appendname"></param>
-        public async static void log(string data, string appendname)
+        public async void log(string data, string appendname)
         {
-            // Create sample file; replace if exists.
-            Windows.Storage.StorageFolder storageFolder =
-                Windows.Storage.ApplicationData.Current.LocalFolder;
-            Windows.Storage.StorageFile sampleFile =
-                await storageFolder.CreateFileAsync("log_file_" + appendname + ".txt",
-                    Windows.Storage.CreationCollisionOption.OpenIfExists);
-
-            String time = DateTime.Now.ToString("yyyyMMdd-HH:mm.ss");
-            data = "[" + time + "]" + data + "\n";
-            //await Windows.Storage.FileIO.WriteTextAsync(sampleFile, data);
-            try
-            {
-                await Windows.Storage.FileIO.AppendTextAsync(sampleFile, data);
-            }
-            catch (Exception ex)
-            {
-                //rootPage.NotifyUser("LOG:" + ex.Message, NotifyType.ErrorMessage);
-                log(data, "_");
-            }
+            this.mainProgram.log(data, appendname);
 
         }
 
@@ -656,8 +631,9 @@ namespace WindowsFormsApplication1
         private async Task<bool> sendImageSize()
         {
             try
-            {
+            {   
                 //TODO put the file names in a static variable               
+                var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
                 StorageFile img = await folder.GetFileAsync("s132_pca10040.bin");
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
                 this.firmwareImage = firmwareImage_buffer.ToArray();
@@ -759,9 +735,9 @@ namespace WindowsFormsApplication1
         /// <param name="trunks"></param>
         private void sendTrunks(byte[][] trunks)
         {
-            DFUService.log("Trunk len:" + trunks.Length, "Status");
-            DFUService.log("Trunk:" + sentTimes + " of " + sendFullPackCompleteIndicator, "Status");
-            DFUService.log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
+            log("Trunk len:" + trunks.Length, "Status");
+            log("Trunk:" + sentTimes + " of " + sendFullPackCompleteIndicator, "Status");
+            log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
             if (sentTimes == sendFullPackCompleteIndicator)
             {
                 int limitation = sentTimes + sendPartialPacketsNumberOfTimes;
@@ -833,9 +809,9 @@ namespace WindowsFormsApplication1
                 GattCommunicationStatus status = await packet.WriteValueAsync(buffer, GattWriteOption.WriteWithoutResponse);
                 sendedBytes += trunks[sentTimes].Length;
                 if (status == GattCommunicationStatus.Success)
-                    DFUService.log("Trunk:" + sentTimes + " of " + limitation + " Bytes:" + sendedBytes, "Status");
+                    log("Trunk:" + sentTimes + " of " + limitation + " Bytes:" + sendedBytes, "Status");
                 else
-                    DFUService.log("Trunk:" + sentTimes + " Unreacheable", "Status");
+                    log("Trunk:" + sentTimes + " Unreacheable", "Status");
 
                 sentTimes++;
             }
@@ -961,12 +937,12 @@ namespace WindowsFormsApplication1
 
             var messageType = stepAt[1];
 
-            DFUService.log("Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
+            log("Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
 
             //Debug
             try
             {
-                DFUService.log("Step:" + stepAt[0] + " comfirmedBytes:" + Convert.ToInt32(stepAt[1]), "Steps");
+                log("Step:" + stepAt[0] + " comfirmedBytes:" + Convert.ToInt32(stepAt[1]), "Steps");
             }
             catch (Exception e) { }
 
@@ -984,6 +960,7 @@ namespace WindowsFormsApplication1
                     var InitialPacketStart = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialzeDFUParameter, DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialPacketReceive);
                     await controlPoint.WriteValueAsync(InitialPacketStart);
                     //Transmit the Init image (DAT).
+                    var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
                     StorageFile dat = await folder.GetFileAsync("s132_pca10040.dat");
                     IBuffer initialPacket = await FileIO.ReadBufferAsync(dat);
                     await packet.WriteValueAsync(initialPacket, GattWriteOption.WriteWithoutResponse);
@@ -1057,6 +1034,7 @@ namespace WindowsFormsApplication1
         private string _OTHER_RESPONSE_CODE = "ResponseCode";
         private string _OTHER_OP_CODE = "OpCode";
         private bool dfuInitialized = false;
+        private Program mainProgram;
 
         string OTHER_RESPONSE_CODE
         {
