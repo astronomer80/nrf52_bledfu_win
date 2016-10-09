@@ -632,7 +632,7 @@ namespace OTADFUApplication
         {
             try
             {   
-                //TODO put the file names in a static variable               
+                //TODO put the file names in a static variable or retrive the files from arguments of the main        
                 var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
                 StorageFile img = await folder.GetFileAsync("s132_pca10040.bin");
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
@@ -652,19 +652,7 @@ namespace OTADFUApplication
             }
             return false;
         }
-
-        //var buffer = deviceFirmwareUpdatePacketCharacteristics.ImageSizeCommand(initialSizes);
-
-
-        private async void packet_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            var data = new byte[args.CharacteristicValue.Length];
-
-            DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
-
-            int z = 0;
-        }
-
+        
         /// <summary>
         /// RequestPacketReceiptNotificationCommand construction command
         /// Use the OpCode OpCode_PacketReceiptNotificationRequest (0x08)
@@ -690,43 +678,7 @@ namespace OTADFUApplication
             sendFullPackCompleteIndicator = (trunks.Length / NUMBER_OF_PACKET_AT_TIME) * NUMBER_OF_PACKET_AT_TIME;
             sendPartialPacketsNumberOfTimes = trunks.Length % NUMBER_OF_PACKET_AT_TIME;
         }
-
-        /// <summary>
-        /// Send bin_array contents as as series of packets (burst mode).
-		/// Each segment is pkt_payload_size bytes long.
-		/// For every pkt_receipt_interval sends, wait for notification.
-        /// </summary>
-        /// <param name="trunks"></param>
-        private void sendTrunks_alt(byte[][] trunks)
-        {
-            for (int i = 0; i < trunks.Length; i += MAX_SIZE_PER_GROUP)
-            {
-
-            }
-            /*
-		segment_count = 1
-		for i in range(0, self.hex_size, self.pkt_payload_size):
-
-			segment = self.bin_array[i:i + self.pkt_payload_size]
-			self._dfu_data_send_cmd(segment)
-
-			#print "segment #", segment_count
-
-			if (segment_count % self.pkt_receipt_interval) == 0:
-				notify = self._dfu_wait_for_notify()
-
-				if notify == None:
-					raise Exception("no notification received")
-
-				dfu_status = self._dfu_parse_notify(notify)
-
-				if dfu_status == None or dfu_status != "OK":
-					raise Exception("bad notification status")
-
-			segment_count += 1
-
-             */
-        }
+        
 
         /// <summary>
         /// Send the image file for each trunk
@@ -799,8 +751,6 @@ namespace OTADFUApplication
                 /*
                  * var buffer = deviceFirmwareUpdateControlPointCharacteristics.
                  * PartialOfFirmwareImage(trunks, sentTimes);
-
-                 
                  */
 
                 var temp = trunks[sentTimes];
@@ -893,6 +843,10 @@ namespace OTADFUApplication
             }
         }
 
+        /// <summary>
+        /// Star
+        /// </summary>
+        /// <returns></returns>
         private async Task StartFirmwareUpdate()
         {
             controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint)).FirstOrDefault();
@@ -900,10 +854,11 @@ namespace OTADFUApplication
             //controlPoint.add_ValueChanged(controlPoint_ValueChanged);
             if (await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
             {
-                Console.WriteLine("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings and reconnect it.");
+                Console.WriteLine("ERROR: Device not connected succesfully. Please sure that the board has a DFU BLE Service.");
                 return;
             }
 
+            //If the board is not in DFU mode is necessary to switch in bootloader mode
             if (await checkDFUStatus() == 1)
                 await this.switchOnBootLoader(controlPoint);
             try
@@ -937,7 +892,7 @@ namespace OTADFUApplication
 
             var messageType = stepAt[1];
 
-            log("Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
+            log("[controlPoint_ValueChanged]Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
 
             //Debug
             try

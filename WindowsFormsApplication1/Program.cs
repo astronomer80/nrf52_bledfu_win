@@ -10,37 +10,38 @@ using System.Threading;
 
 namespace OTADFUApplication
 {    
+    /// <summary>
+    /// The main program
+    /// </summary>
     public class Program
     {  
-
         public String macAddress = "";
         public String path = @"E:\nrf52_bledfu_win_console";
-        
+        StreamWriter logFile = null;
+        String logPath = @"C:\logs\";
+
         Program(){
             String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            String filename = "[" + time + "].txt";
+            String logfilename = "[" + time + "].txt";
             
-            Console.WriteLine(filename);
+            Console.WriteLine("Log filename:" + logfilename);
             try
             {
-                logFile = new StreamWriter(logPath + filename, true);
+                logFile = new StreamWriter(logPath + logfilename, true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.StackTrace);
             }
         }
-        StreamWriter logFile = null;
-        String logPath = @"C:\logs\";
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main(String[] args)
-        {
-            Console.WriteLine("TestLine");
+        {            
             if(args.Length>0)
-                Console.WriteLine("TestLine " + args[0]);
+                Console.WriteLine("Arg0 " + args[0]);
    
             var program = new Program();
             var task1= program.MainTask();
@@ -70,6 +71,10 @@ namespace OTADFUApplication
             }
         }
 
+        /// <summary>
+        /// Defines the Main asynchronous task
+        /// </summary>
+        /// <returns></returns>
         public async Task MainTask()
         {
             this.log("MainTask", "");
@@ -83,7 +88,6 @@ namespace OTADFUApplication
             {
                 this.log(e.StackTrace, "Test");
             }
-
         }
 
         /// <summary>
@@ -107,12 +111,14 @@ namespace OTADFUApplication
                 {
                     var deviceAddress = "not available";
                     //Console.WriteLine(device.Name + " " + device.Id);                    
+                    //Parse device address
                     if (device.Id.Contains("_") && device.Id.Contains("#"))
                         deviceAddress = device.Id.Split('_')[1].Split('#')[0];
                     Console.WriteLine(device.Name + " " + deviceAddress);
                     //foreach (var prop in device.Properties) {
                     //    Console.WriteLine(prop.Key + " " + prop.Value);                        
                     //}
+                    //TODO
                     //if(this.macAddress==deviceAddress)
                     if (true) {
                         try
