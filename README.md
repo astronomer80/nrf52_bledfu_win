@@ -2,6 +2,7 @@
 Console Windows app to upload an application via BLE on nRF52 MCU that has the DFU Service installed.
 
 DFU Procedure performed by this application:
+
 1)Send 'START DFU' opcode + Application Command (0x0104)
 
 2)Send the image size
