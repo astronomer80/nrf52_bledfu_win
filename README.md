@@ -7,7 +7,7 @@ DFU Procedure performed by this application:
 
 2)Send the image size
 
-3)Send 'INIT DFU' Command (0x0200)
+3)Send 'INIT DFU' Command (0x0200): Called in the controlPoint_CalueChanged event invoked when the BLE device replies after sending the image size.
 
 4)Transmit the Init image (The file DAT content)
 
