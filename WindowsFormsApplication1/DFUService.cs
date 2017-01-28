@@ -304,9 +304,11 @@ namespace OTADFUApplication
         /// </summary>
         /// <param name="device"></param>
         /// <returns></returns>
-        public async Task InitializeServiceAsync(DeviceInformation device, Program program)
+        public async Task InitializeServiceAsync(DeviceInformation device, Program program, String bin_file, String dat_file)
         {
             this.mainProgram = program;
+            this.bin_file = bin_file;
+            this.dat_file = dat_file;
             try
             {
                 deviceContainerId = "{" + device.Properties["System.Devices.ContainerId"] + "}";
@@ -634,7 +636,7 @@ namespace OTADFUApplication
             {   
                 //TODO put the file names in a static variable or retrive the files from arguments of the main        
                 var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
-                StorageFile img = await folder.GetFileAsync("s132_pca10040.bin");
+                StorageFile img = await folder.GetFileAsync(this.bin_file);
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
                 this.firmwareImage = firmwareImage_buffer.ToArray();
 
@@ -916,7 +918,7 @@ namespace OTADFUApplication
                     await controlPoint.WriteValueAsync(InitialPacketStart);
                     //Transmit the Init image (DAT).
                     var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
-                    StorageFile dat = await folder.GetFileAsync("s132_pca10040.dat");
+                    StorageFile dat = await folder.GetFileAsync(this.dat_file);
                     IBuffer initialPacket = await FileIO.ReadBufferAsync(dat);
                     await packet.WriteValueAsync(initialPacket, GattWriteOption.WriteWithoutResponse);
 
@@ -990,6 +992,10 @@ namespace OTADFUApplication
         private string _OTHER_OP_CODE = "OpCode";
         private bool dfuInitialized = false;
         private Program mainProgram;
+        //Given bin file
+        private String bin_file;
+        //Given dat file
+        private String dat_file;
 
         string OTHER_RESPONSE_CODE
         {
