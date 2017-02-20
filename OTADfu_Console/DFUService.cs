@@ -46,7 +46,9 @@ namespace OTADFUApplication
         private GattCharacteristic dFUVersion { get; set; }
         private bool IsServiceChanged = false;
         public bool IsServiceInitialized { get; set; }
+        //The byte array of the file provided to upload
         public byte[] firmwareImage { get; private set; }
+        //The byte array of trunks of the image file
         private byte[][] firmwareImageTrunks { get; set; }
         public FirmwareTypeEnum firmwareType { get; set; }
 
@@ -56,9 +58,13 @@ namespace OTADFUApplication
         private int sentTimes = 0;
         private int sendedBytes = 0;
         
+        //UUID to identify the DFU service
         public static String DFUService_UUID = "00001530-1212-efde-1523-785feabcd123";
+        //UUID to send commands
         public static String DFUControlPoint = "00001531-1212-efde-1523-785feabcd123";
+        //UUID to send data
         public static String DFUPacket = "00001532-1212-efde-1523-785feabcd123";
+        //UUID to check the DFU version: buttonless or not.
         public static String DFUVersion = "00001534-1212-efde-1523-785feabcd123";
         #endregion
         
@@ -124,8 +130,12 @@ namespace OTADFUApplication
             //StartDeviceConnectionWatcher();
         }
 
+        /// <summary>
+        /// TODO Review this function
+        /// </summary>
         internal async void LoadDFUSettings()
         {
+            //TODO Review this part
             /*
             dfuSettingViewModel = SettingPivotViewModel.GetInstance().GetDeviceFirmwareUpdateSettingPageViewModel();
             this.SelectedDeviceFirmwareTypeName = dfuSettingViewModel.SelectedDeviceFirmwareTypeName == null ? "Image type:" : dfuSettingViewModel.SelectedDeviceFirmwareTypeName;
@@ -151,6 +161,14 @@ namespace OTADFUApplication
             }
         }
 
+
+        /// <summary>
+        /// Callback for each packet receipt from the device
+        /// </summary>
+        /// <param name="sizeOfBytesSent"></param>
+        /// <param name="totalFirmwareLength"></param>
+        /// <param name="messageType"></param>
+        /// <param name="messageData"></param>
         async void deviceFirmwareUpdateService_PacketReceiptConfirmed(int sizeOfBytesSent, int totalFirmwareLength, string messageType, string messageData)
         {
             log("deviceFirmwareUpdateService_PacketReceiptConfirmed", "Status");
@@ -162,7 +180,11 @@ namespace OTADFUApplication
             await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.SENDING, percentSent: 100);
         }
 
-        async void deviceFirmwareUpdateService_DeviceFirmwareUpdateComplete(bool IsComplete)
+        /// <summary>
+        /// Callback when the firmware update is complete
+        /// </summary>
+        /// <param name="IsComplete"></param>
+        async void C(bool IsComplete)
         {
             log("deviceFirmwareUpdateService_DeviceFirmwareUpdateComplete:" + IsComplete, "Status");
 
@@ -173,6 +195,7 @@ namespace OTADFUApplication
             await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.SENDING_COMPLETE);
         }
         
+        //Error Messages
         private string FILES_NOT_CHOSEN = "File not present";
         private string DEVICE_NOT_CONNECTED = "Please connect your device";
         private string SERVICES_NOT_AVAILABLE = "Try to re-pair the device";
@@ -221,6 +244,14 @@ namespace OTADFUApplication
 
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="percentSent"></param>
+        /// <param name="errorType"></param>
+        /// <param name="errorCode"></param>
+        /// <returns></returns>
         public async Task<bool> UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum status, int percentSent = 0, string errorType = "none", string errorCode = "none")
         {
             await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -634,7 +665,6 @@ namespace OTADFUApplication
         {
             try
             {   
-                //TODO put the file names in a static variable or retrive the files from arguments of the main        
                 var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
                 StorageFile img = await folder.GetFileAsync(this.bin_file);
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
@@ -846,7 +876,7 @@ namespace OTADFUApplication
         }
 
         /// <summary>
-        /// Star
+        /// StartFirmwareUpdate
         /// </summary>
         /// <returns></returns>
         private async Task StartFirmwareUpdate()

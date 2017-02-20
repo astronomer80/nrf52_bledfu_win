@@ -10,3 +10,10 @@ E:\nrf52_bledfu_win_console\WindowsFormsApplication1\bin\Debug\OTADfu_Console.ex
 E:\nrf52_bledfu_win_console\WindowsFormsApplication1\bin\Debug\OTADfu_Console.pdb
 E:\nrf52_bledfu_win_console\WindowsFormsApplication1\obj\Debug\OTADfu_Console.exe
 E:\nrf52_bledfu_win_console\WindowsFormsApplication1\obj\Debug\OTADfu_Console.pdb
+E:\nrf52_bledfu_win_console\OTADfu_Console\bin\Debug\OTADfu_Console.exe.config
+E:\nrf52_bledfu_win_console\OTADfu_Console\bin\Debug\OTADfu_Console.exe
+E:\nrf52_bledfu_win_console\OTADfu_Console\bin\Debug\OTADfu_Console.pdb
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.Properties.Resources.resources
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.csproj.GenerateResource.Cache
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.exe
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.pdb

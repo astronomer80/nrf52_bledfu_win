@@ -19,7 +19,8 @@ namespace OTADFUApplication
         //TODO
         public String path = @"E:\nrf52_bledfu_win_console";
         StreamWriter logFile = null;
-        String logPath = @"C:\logs\";
+        //String logPath = @"C:\logs\";
+        String logPath = @".\logs\";
 
         Program(){
             String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -28,6 +29,7 @@ namespace OTADFUApplication
             Console.WriteLine("Log filename:" + logfilename);
             try
             {
+                Directory.CreateDirectory(logPath);
                 logFile = new StreamWriter(logPath + logfilename, true);
             }
             catch (Exception ex)
@@ -38,6 +40,15 @@ namespace OTADFUApplication
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        /// <param name="args">
+        /// 0: command (help, scan or update)
+        /// 1: file type (-f for bin file, -z for zip file)
+        /// 2: the path of bin file (if args[1] is -f) or the zip file (if args[1] is -z)
+        /// 3: -d  (if args[1] is -f) or -a (if args[1] is -z)
+        /// 4: the dat file path (if args[1] is -f) or the device address (if args[1] is -z)
+        /// 5: -a (if args[1] is -f) 
+        /// 6: the device address (if args[1] is -f)
+        /// </param>
         [STAThread]
         static void Main(String[] args)
         {
@@ -65,15 +76,19 @@ namespace OTADFUApplication
                     new Program().MainTask(false, args[2], args[4], args[6]);
                 //Update from zipped package
                 else if (args.Length >= 5 && args[1] == "-z" && args[3] == "-a") {
+                    String tmp = Directory.GetCurrentDirectory();// .GetDirectoryRoot(args[2]);
+                    Console.WriteLine(tmp);
                     ZipFile.ExtractToDirectory(args[2], ".");
-                    String bin_file = "";
-                    String dat_file = "";
+                    String bin_file = args[2].Replace(".zip", ".bin");
+                    String dat_file = args[2].Replace(".zip", ".dat");
+                    File.Delete(bin_file);
+                    File.Delete(dat_file);
                     new Program().MainTask(false, bin_file, dat_file, args[4]);
                 }else
-                    Console.WriteLine("Invalid command. Type 'otadfu help' for more information");
+                    Console.WriteLine("Invalid update command. Type 'otadfu help' for more information");
             }
             else {
-                Console.WriteLine("Invalid command. Type 'otadfu help' for more information");
+                Console.WriteLine("Unknown command. Type 'otadfu help' for more information");
                     
             }
             Console.WriteLine("Press a key to close");
