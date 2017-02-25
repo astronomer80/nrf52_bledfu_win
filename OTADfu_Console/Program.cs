@@ -225,7 +225,7 @@ namespace OTADFUApplication
         public async Task MainTask(String logPath, bool scanonly, String bin_file, String dat_file, String device_address)
         {
             this.createLog(logPath);
-            this.log("MainTask", "");
+            //this.log("MainTask", "");
             try
             {
                 await readevices(scanonly, bin_file, dat_file, device_address);
@@ -264,9 +264,9 @@ namespace OTADFUApplication
                     //foreach (var prop in device.Properties) {
                     //    Console.WriteLine(prop.Key + " " + prop.Value);                        
                     //}                    
-                    //if(!scanonly && given_device_address==deviceAddress)
+                    if(!scanonly && given_device_address==deviceAddress)
                     //TODO Only for test
-                    if (!scanonly && true)
+                    //if (!scanonly && true)
                     {
                         try
                         {
