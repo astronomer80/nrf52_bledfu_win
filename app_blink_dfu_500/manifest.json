@@ -1,8 +1,8 @@
 {
     "manifest": {
         "application": {
-            "bin_file": "s132_pca10040.bin",
-            "dat_file": "s132_pca10040.dat",
+            "bin_file": "app_blink_dfu_500.bin",
+            "dat_file": "app_blink_dfu_500.dat",
             "init_packet_data": {
                 "application_version": 4294967295,
                 "device_revision": 65535,

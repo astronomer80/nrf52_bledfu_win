@@ -17,3 +17,4 @@ E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.Properties.R
 E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.csproj.GenerateResource.Cache
 E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.exe
 E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.pdb
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Debug\OTADfu_Console.csprojResolveAssemblyReference.cache

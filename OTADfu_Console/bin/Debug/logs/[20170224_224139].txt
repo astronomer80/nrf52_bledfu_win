@@ -1,0 +1,3 @@
+[]MainTask
+[]Scanning BLE devices...
+No paired BLE devices found

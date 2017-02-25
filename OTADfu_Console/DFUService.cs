@@ -12,6 +12,7 @@ using Windows.Storage;
 using Common.Service.GattService;
 using Common.Utility;
 using Windows.Foundation;
+using System.IO;
 
 namespace OTADFUApplication
 {
@@ -473,6 +474,7 @@ namespace OTADFUApplication
 
         /// <summary>
         /// Configure the Bluetooth device to send notifications whenever the Characteristic value changes
+        /// UNUSED
         /// </summary>
         private async Task StartFirmwareUpdate_()
         {
@@ -527,11 +529,11 @@ namespace OTADFUApplication
                         // Register a PnpObjectWatcher to detect when a connection to the device is established,
                         // such that the application can retry device configuration.
                         //StartDeviceConnectionWatcher();
-                        log("Unreacheable", "Scenario1");
+                        log("Unreacheable", "DFUService");
                     }
                     else
                     {
-                        log("GattCommunicationStatus Success", "Scenario1");
+                        log("GattCommunicationStatus Success", "DFUService");
                         int dfuVersion = await checkDFUStatus();
                         if (dfuVersion == 1)
                             await switchOnBootLoader(controlPoint);
@@ -627,14 +629,38 @@ namespace OTADFUApplication
             //<Length of SoftDevice><Length of Bootloader><Length of Application> 
             var sizes = new int[] { 0, 0, 0 };
             sizes[2] = firmwareImage.Length; //Only the application
+
+            //TODO Restore softdevice and bootloader update
+            /*
+            switch (firmwareType)
+            {
+                case FirmwareTypeEnum.SoftDevice:
+                    sizes[0] = firmwareImage.Length;
+                    break;
+                case FirmwareTypeEnum.BootLoader:
+                    sizes[1] = firmwareImage.Length;
+                    break;
+                case FirmwareTypeEnum.Application:
+                    sizes[2] = firmwareImage.Length;
+                    break;
+                case FirmwareTypeEnum.Softdevice_Bootloader:
+                    if (softDevice == 0 || bootLoader == 0)
+                        throw new ArgumentException();
+                    sizes[0] = softDevice;
+                    sizes[1] = bootLoader;
+                    break;
+                default:
+                    throw new ArgumentException();
+            }*/
+
             return sizes;
         }
 
         /// <summary>
-        /// Try using this function
+        /// Create the IBuffer to send with the image size
         /// </summary>
         /// <param name="sizeOfImage"></param>
-        /// <returns></returns>
+        /// <returns>IBuffer</returns>
         public IBuffer ImageSizeCommand(int[] sizeOfImage)
         {
             if (sizeOfImage.Length != 3)
@@ -664,8 +690,9 @@ namespace OTADFUApplication
         private async Task<bool> sendImageSize()
         {
             try
-            {   
-                var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
+            {
+                //var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
+                var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(this.bin_file));                
                 StorageFile img = await folder.GetFileAsync(this.bin_file);
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
                 this.firmwareImage = firmwareImage_buffer.ToArray();
@@ -947,7 +974,8 @@ namespace OTADFUApplication
                     var InitialPacketStart = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialzeDFUParameter, DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialPacketReceive);
                     await controlPoint.WriteValueAsync(InitialPacketStart);
                     //Transmit the Init image (DAT).
-                    var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
+                    //var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
+                    var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(this.dat_file));
                     StorageFile dat = await folder.GetFileAsync(this.dat_file);
                     IBuffer initialPacket = await FileIO.ReadBufferAsync(dat);
                     await packet.WriteValueAsync(initialPacket, GattWriteOption.WriteWithoutResponse);
