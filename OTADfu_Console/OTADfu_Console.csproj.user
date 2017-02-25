@@ -14,6 +14,6 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'hex_file|AnyCPU'">
-    <StartArguments>update -h E:\nrf52_bledfu_win_console\app_blink_dfu_500\app_blink_dfu_500.hex -a aaaa</StartArguments>
+    <StartArguments>update -h E:\nrf52_bledfu_win_console\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a aaaa</StartArguments>
   </PropertyGroup>
 </Project>

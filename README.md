@@ -14,6 +14,7 @@ OTADfu_Console.exe help
 OTADfu_Console.exe scan
 OTADfu_Console.exe update -z application.zip -a xxxxxxx
 OTADfu_Console.exe update -f application.bin -d application.dat -a xxxxxxx
+OTADfu_Console.exe update -h application.bin -a xxxxxxx
 
 DFU Procedure performed by this application:
 
