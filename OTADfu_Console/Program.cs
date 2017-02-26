@@ -93,15 +93,15 @@ namespace OTADFUApplication
                 }
                 else if (args.Length >= 5 && args[1] == "-h" && args[3] == "-a")
                 {
-                    Console.WriteLine("Update from hex file");
+                    Console.WriteLine("Update from hex/bin file");
                     String hex_file = args[2];
                     if(!File.Exists(hex_file))
                         Console.WriteLine("Error: the "+hex_file+" file doesn't exist");
                     else
                     {
                         String zip_file = hex_file.Replace(".hex", ".zip").Replace(".bin", ".zip");
-                        Console.WriteLine(hex_file);
-                        Console.WriteLine(zip_file);
+                        //Console.WriteLine(hex_file);
+                        //Console.WriteLine(zip_file);
                         String device_address = args[4];
                         //nrfutil dfu genpkg app_package.zip--application application.hex
                         try
@@ -139,6 +139,7 @@ namespace OTADFUApplication
                 Console.WriteLine("Unknown command. Type 'otadfu help' for more information");
 
             }
+            //DEBUG
             Console.WriteLine("Press a key to close");
             Console.ReadLine();
         }
@@ -151,13 +152,13 @@ namespace OTADFUApplication
         {
             this.logPath = logPath + @"\";
             String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            String logfilename = "\\[" + time + "]_"+app_name+"_LOG.txt";
+            String logfilename = "[" + time + "]_"+app_name+"_LOG.txt";
 
             Console.WriteLine("Log filename:" + logfilename);
             try
             {
                 Directory.CreateDirectory(logPath);
-                logFile = new StreamWriter(logPath + logfilename, true);
+                logFile = new StreamWriter(logPath + "\\" + logfilename, true);
             }
             catch (Exception ex)
             {
@@ -253,6 +254,8 @@ namespace OTADFUApplication
             Thread.Sleep(2000);  //TODO Remove this delay
             if (devices.Count > 0)
             {
+                Console.WriteLine("BLE devices already paired found:");
+                bool found = false;
                 foreach (DeviceInformation device in devices)
                 {
                     var deviceAddress = "not available";
@@ -260,7 +263,7 @@ namespace OTADFUApplication
                     //Parse device address
                     if (device.Id.Contains("_") && device.Id.Contains("#"))
                         deviceAddress = device.Id.Split('_')[1].Split('#')[0];
-                    Console.WriteLine(device.Name + " " + deviceAddress);
+                    Console.WriteLine("Device name:[" + device.Name + "] Device address:[" + deviceAddress+"]");
                     //foreach (var prop in device.Properties) {
                     //    Console.WriteLine(prop.Key + " " + prop.Value);                        
                     //}                    
@@ -268,6 +271,7 @@ namespace OTADFUApplication
                     //TODO Only for test
                     //if (!scanonly && true)
                     {
+                        found = true;
                         try
                         {
                             //DFUService dfs =DFUService.Instance;
@@ -280,6 +284,9 @@ namespace OTADFUApplication
                         }
 
                     }
+
+                    if (!found)
+                        Console.WriteLine("No devices found for the given address: " + given_device_address);
 
                 }
             }

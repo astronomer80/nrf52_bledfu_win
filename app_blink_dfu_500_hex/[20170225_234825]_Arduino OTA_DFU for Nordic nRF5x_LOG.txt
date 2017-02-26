@@ -1,3 +1,0 @@
-[]MainTask
-[]Scanning BLE devices...
-No paired BLE devices found. Pair you BLE device in the windows settings first

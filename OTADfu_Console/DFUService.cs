@@ -690,13 +690,11 @@ namespace OTADFUApplication
         private async Task<bool> sendImageSize()
         {
             try
-            {
-                //var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
-                var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(this.bin_file));                
-                StorageFile img = await folder.GetFileAsync(this.bin_file);
+            {   
+                var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(this.bin_file));
+                StorageFile img = await folder.GetFileAsync(Path.GetFileName(this.bin_file));
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
                 this.firmwareImage = firmwareImage_buffer.ToArray();
-
                 packet = service.GetCharacteristics(new Guid(DFUService.DFUPacket)).FirstOrDefault();
 
                 IBuffer buffer = ImageSizeCommand(GetSizeOfImage());
@@ -707,6 +705,7 @@ namespace OTADFUApplication
             }
             catch (Exception e)
             {
+                log(e.StackTrace, "DFUService");
                 log("Error: [sendImageSize]" + e.Message, "DFUService");
             }
             return false;
@@ -974,9 +973,8 @@ namespace OTADFUApplication
                     var InitialPacketStart = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialzeDFUParameter, DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialPacketReceive);
                     await controlPoint.WriteValueAsync(InitialPacketStart);
                     //Transmit the Init image (DAT).
-                    //var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
                     var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(this.dat_file));
-                    StorageFile dat = await folder.GetFileAsync(this.dat_file);
+                    StorageFile dat = await folder.GetFileAsync(Path.GetFileName(this.dat_file));
                     IBuffer initialPacket = await FileIO.ReadBufferAsync(dat);
                     await packet.WriteValueAsync(initialPacket, GattWriteOption.WriteWithoutResponse);
 
