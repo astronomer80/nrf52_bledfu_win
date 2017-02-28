@@ -27,6 +27,8 @@ namespace OTADFUApplication
         /// The default path of the log file
         /// </summary>
         String logPath = @".\logs\";
+        public static Boolean verboseMode = false;
+
 
         /// <summary>
         /// Class constructor and create the logPath
@@ -53,6 +55,11 @@ namespace OTADFUApplication
         {
             Program program = new Program();
             Console.WriteLine(program.app_name + " version " + program.version);
+            
+            Program.verboseMode = program.checkArgs(args, "-v");
+            if (Program.verboseMode)
+                Console.WriteLine("Verbose Mode");
+            
             //if (args.Length  > 0) //debug
             if (args.Length == 0)
                 Console.WriteLine("Usage: otadfu [help] or [scan] or [update -f <bin_file> -d <dat_file> -a <device_address>] or [update -z <zip_file> -a <device_address>] or [update -h <hex_file> -a <device_address>]");
@@ -80,6 +87,9 @@ namespace OTADFUApplication
             //Update procedure
             else if (args[0] == "update")
             {
+                //bool check=program.checkArgs(args, "-f -d -a");
+                //Console.WriteLine(check);
+
                 if (args.Length >= 7 && args[1] == "-f" && args[3] == "-d" && args[5] == "-a")
                 {
                     Console.WriteLine("Update from bin and dat files");
@@ -139,9 +149,32 @@ namespace OTADFUApplication
                 Console.WriteLine("Unknown command. Type 'otadfu help' for more information");
 
             }
+            
             //DEBUG
-            Console.WriteLine("Press a key to close");
+            Console.WriteLine("[DEBUG]Press a key to close at the end");
             Console.ReadLine();
+        }
+
+        /// <summary>
+        /// It returns true if on the arguments there are all the parameters in the conditions variable
+        /// </summary>
+        /// <param name="args">Main arguments</param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        private bool checkArgs(String[] args, String conditions) {
+            bool ret = true;
+            String argparams = "";            
+            String[] conditions_a = conditions.Split(' ');
+            foreach (String a in args)
+            {
+                argparams += a;
+            }
+            foreach (String c in conditions_a)
+            {
+                if (!argparams.Contains(c))
+                    ret = false;
+            }
+            return ret;
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.Properties.Resources.resources
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.csproj.GenerateResource.Cache
 E:\nrf52_bledfu_win_console\OTADfu_Console\bin\hex_file\OTADfu_Console.exe.config
 E:\nrf52_bledfu_win_console\OTADfu_Console\bin\hex_file\OTADfu_Console.exe
 E:\nrf52_bledfu_win_console\OTADfu_Console\bin\hex_file\OTADfu_Console.pdb
-E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.Properties.Resources.resources
-E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.csproj.GenerateResource.Cache
 E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.exe
 E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.pdb

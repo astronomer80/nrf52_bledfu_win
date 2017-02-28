@@ -128,7 +128,8 @@ namespace Common.Service.GattService
             requestedOpCode = data[1]; //dfu_process
             responseValue = data[2]; //dfu_status
 
-            Console.WriteLine("[ProcessData]OpCode:" + opCode + " requestedOpCode/dfu_process:" + requestedOpCode + " responseValue/dfu_status:" + responseValue);
+            if(Program.verboseMode)
+                Console.WriteLine("[ProcessData]OpCode:" + opCode + " requestedOpCode/dfu_process:" + requestedOpCode + " responseValue/dfu_status:" + responseValue);
 
             if (opCode == OpCode_ResponseCode) //OpCode_ResponseCode=0x10
             {

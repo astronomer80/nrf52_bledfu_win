@@ -745,9 +745,14 @@ namespace OTADFUApplication
         /// <param name="trunks"></param>
         private void sendTrunks(byte[][] trunks)
         {
-            log("Trunk len:" + trunks.Length, "Status");
-            log("Trunk:" + sentTimes + " of " + sendFullPackCompleteIndicator, "Status");
-            log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
+            double perc = ((double)sentTimes / (double)sendFullPackCompleteIndicator)*100;
+            log("Trunk:" + sentTimes + " of " + sendFullPackCompleteIndicator + " ["+ (int)perc+ "%]", "Status");
+            if (Program.verboseMode)
+            {
+                log("Trunk len:" + trunks.Length, "Status");                
+                log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
+            }            
+            
             if (sentTimes == sendFullPackCompleteIndicator)
             {
                 int limitation = sentTimes + sendPartialPacketsNumberOfTimes;
@@ -912,7 +917,7 @@ namespace OTADFUApplication
             //controlPoint.add_ValueChanged(controlPoint_ValueChanged);
             if (await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
             {
-                Console.WriteLine("ERROR: Device not connected succesfully. Please sure that the board has a DFU BLE Service.");
+                Console.WriteLine("ERROR: Device not connected succesfully. Please ensure that the board has a DFU BLE Service.");
                 return;
             }
 
@@ -950,14 +955,15 @@ namespace OTADFUApplication
 
             var messageType = stepAt[1];
 
-            log("[controlPoint_ValueChanged]Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
-
-            //Debug
-            try
+            if (Program.verboseMode)
             {
-                log("Step:" + stepAt[0] + " comfirmedBytes:" + Convert.ToInt32(stepAt[1]), "Steps");
-            }
-            catch (Exception e) { }
+                log("[controlPoint_ValueChanged]Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
+                try
+                {
+                    log("Step:" + stepAt[0] + " comfirmedBytes:" + Convert.ToInt32(stepAt[1]), "Steps");
+                }
+                catch (Exception e) { }
+            }            
 
             if (messageType.Equals(OTHER_OP_CODE) || messageType.Equals(OTHER_RESPONSE_CODE))
             {
@@ -998,7 +1004,8 @@ namespace OTADFUApplication
 
                     break;
                 case DfuOperationCode.PacketReceiptNotification:
-                    Console.WriteLine("PacketReceiptNotification");
+                    if(Program.verboseMode)
+                        Console.WriteLine("PacketReceiptNotification");
 
                     var comfirmedBytes = Convert.ToInt32(stepAt[1]);
                     if (PacketReceiptConfirmed != null)
@@ -1022,6 +1029,8 @@ namespace OTADFUApplication
                         DeviceFirmwareUpdateComplete(true);
 
                     Stop();
+
+                    Console.WriteLine("****DONE****");
                     break;
 
             }
