@@ -1,0 +1,6 @@
+E:\nrf52_bledfu_win_console\OTADfu_Console\bin\Release\OTADfu_Console.exe.config
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Release\OTADfu_Console.Properties.Resources.resources
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Release\OTADfu_Console.csproj.GenerateResource.Cache
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Release\OTADfu_Console.exe.manifest
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Release\OTADfu_Console.exe
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\Release\OTADfu_Console.pdb

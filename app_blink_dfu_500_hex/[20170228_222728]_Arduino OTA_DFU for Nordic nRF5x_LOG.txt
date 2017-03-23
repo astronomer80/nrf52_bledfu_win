@@ -1,0 +1,796 @@
+[]Scanning BLE devices...
+The DFU Version of your device is : 8
+switchOnBootLoader success
+[controlPoint_ValueChanged]Step:StartDfuSucceded MessageType:
+[controlPoint_ValueChanged]Step:InitialzeDFUParameterSucceded MessageType:
+Lenght:31448
+Trunk:0 of 1570 [0%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:200
+Step:PacketReceiptNotification comfirmedBytes:200
+Trunk:10 of 1570 [0%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:400
+Step:PacketReceiptNotification comfirmedBytes:400
+Trunk:20 of 1570 [1%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:600
+Step:PacketReceiptNotification comfirmedBytes:600
+Trunk:30 of 1570 [1%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:800
+Step:PacketReceiptNotification comfirmedBytes:800
+Trunk:40 of 1570 [2%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:1000
+Step:PacketReceiptNotification comfirmedBytes:1000
+Trunk:50 of 1570 [3%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:1200
+Step:PacketReceiptNotification comfirmedBytes:1200
+Trunk:60 of 1570 [3%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:1400
+Step:PacketReceiptNotification comfirmedBytes:1400
+Trunk:70 of 1570 [4%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:1600
+Step:PacketReceiptNotification comfirmedBytes:1600
+Trunk:80 of 1570 [5%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:1800
+Step:PacketReceiptNotification comfirmedBytes:1800
+Trunk:90 of 1570 [5%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:2000
+Step:PacketReceiptNotification comfirmedBytes:2000
+Trunk:100 of 1570 [6%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:2200
+Step:PacketReceiptNotification comfirmedBytes:2200
+Trunk:110 of 1570 [7%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:2400
+Step:PacketReceiptNotification comfirmedBytes:2400
+Trunk:120 of 1570 [7%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:2600
+Step:PacketReceiptNotification comfirmedBytes:2600
+Trunk:130 of 1570 [8%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:2800
+Step:PacketReceiptNotification comfirmedBytes:2800
+Trunk:140 of 1570 [8%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:3000
+Step:PacketReceiptNotification comfirmedBytes:3000
+Trunk:150 of 1570 [9%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:3200
+Step:PacketReceiptNotification comfirmedBytes:3200
+Trunk:160 of 1570 [10%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:3400
+Step:PacketReceiptNotification comfirmedBytes:3400
+Trunk:170 of 1570 [10%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:3600
+Step:PacketReceiptNotification comfirmedBytes:3600
+Trunk:180 of 1570 [11%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:3800
+Step:PacketReceiptNotification comfirmedBytes:3800
+Trunk:190 of 1570 [12%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:4000
+Step:PacketReceiptNotification comfirmedBytes:4000
+Trunk:200 of 1570 [12%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:4200
+Step:PacketReceiptNotification comfirmedBytes:4200
+Trunk:210 of 1570 [13%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:4400
+Step:PacketReceiptNotification comfirmedBytes:4400
+Trunk:220 of 1570 [14%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:4600
+Step:PacketReceiptNotification comfirmedBytes:4600
+Trunk:230 of 1570 [14%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:4800
+Step:PacketReceiptNotification comfirmedBytes:4800
+Trunk:240 of 1570 [15%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:5000
+Step:PacketReceiptNotification comfirmedBytes:5000
+Trunk:250 of 1570 [15%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:5200
+Step:PacketReceiptNotification comfirmedBytes:5200
+Trunk:260 of 1570 [16%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:5400
+Step:PacketReceiptNotification comfirmedBytes:5400
+Trunk:270 of 1570 [17%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:5600
+Step:PacketReceiptNotification comfirmedBytes:5600
+Trunk:280 of 1570 [17%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:5800
+Step:PacketReceiptNotification comfirmedBytes:5800
+Trunk:290 of 1570 [18%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:6000
+Step:PacketReceiptNotification comfirmedBytes:6000
+Trunk:300 of 1570 [19%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:6200
+Step:PacketReceiptNotification comfirmedBytes:6200
+Trunk:310 of 1570 [19%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:6400
+Step:PacketReceiptNotification comfirmedBytes:6400
+Trunk:320 of 1570 [20%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:6600
+Step:PacketReceiptNotification comfirmedBytes:6600
+Trunk:330 of 1570 [21%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:6800
+Step:PacketReceiptNotification comfirmedBytes:6800
+Trunk:340 of 1570 [21%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:7000
+Step:PacketReceiptNotification comfirmedBytes:7000
+Trunk:350 of 1570 [22%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:7200
+Step:PacketReceiptNotification comfirmedBytes:7200
+Trunk:360 of 1570 [22%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:7400
+Step:PacketReceiptNotification comfirmedBytes:7400
+Trunk:370 of 1570 [23%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:7600
+Step:PacketReceiptNotification comfirmedBytes:7600
+Trunk:380 of 1570 [24%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:7800
+Step:PacketReceiptNotification comfirmedBytes:7800
+Trunk:390 of 1570 [24%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:8000
+Step:PacketReceiptNotification comfirmedBytes:8000
+Trunk:400 of 1570 [25%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:8200
+Step:PacketReceiptNotification comfirmedBytes:8200
+Trunk:410 of 1570 [26%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:8400
+Step:PacketReceiptNotification comfirmedBytes:8400
+Trunk:420 of 1570 [26%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:8600
+Step:PacketReceiptNotification comfirmedBytes:8600
+Trunk:430 of 1570 [27%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:8800
+Step:PacketReceiptNotification comfirmedBytes:8800
+Trunk:440 of 1570 [28%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:9000
+Step:PacketReceiptNotification comfirmedBytes:9000
+Trunk:450 of 1570 [28%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:9200
+Step:PacketReceiptNotification comfirmedBytes:9200
+Trunk:460 of 1570 [29%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:9400
+Step:PacketReceiptNotification comfirmedBytes:9400
+Trunk:470 of 1570 [29%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:9600
+Step:PacketReceiptNotification comfirmedBytes:9600
+Trunk:480 of 1570 [30%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:9800
+Step:PacketReceiptNotification comfirmedBytes:9800
+Trunk:490 of 1570 [31%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:10000
+Step:PacketReceiptNotification comfirmedBytes:10000
+Trunk:500 of 1570 [31%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:10200
+Step:PacketReceiptNotification comfirmedBytes:10200
+Trunk:510 of 1570 [32%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:10400
+Step:PacketReceiptNotification comfirmedBytes:10400
+Trunk:520 of 1570 [33%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:10600
+Step:PacketReceiptNotification comfirmedBytes:10600
+Trunk:530 of 1570 [33%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:10800
+Step:PacketReceiptNotification comfirmedBytes:10800
+Trunk:540 of 1570 [34%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:11000
+Step:PacketReceiptNotification comfirmedBytes:11000
+Trunk:550 of 1570 [35%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:11200
+Step:PacketReceiptNotification comfirmedBytes:11200
+Trunk:560 of 1570 [35%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:11400
+Step:PacketReceiptNotification comfirmedBytes:11400
+Trunk:570 of 1570 [36%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:11600
+Step:PacketReceiptNotification comfirmedBytes:11600
+Trunk:580 of 1570 [36%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:11800
+Step:PacketReceiptNotification comfirmedBytes:11800
+Trunk:590 of 1570 [37%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:12000
+Step:PacketReceiptNotification comfirmedBytes:12000
+Trunk:600 of 1570 [38%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:12200
+Step:PacketReceiptNotification comfirmedBytes:12200
+Trunk:610 of 1570 [38%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:12400
+Step:PacketReceiptNotification comfirmedBytes:12400
+Trunk:620 of 1570 [39%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:12600
+Step:PacketReceiptNotification comfirmedBytes:12600
+Trunk:630 of 1570 [40%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:12800
+Step:PacketReceiptNotification comfirmedBytes:12800
+Trunk:640 of 1570 [40%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:13000
+Step:PacketReceiptNotification comfirmedBytes:13000
+Trunk:650 of 1570 [41%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:13200
+Step:PacketReceiptNotification comfirmedBytes:13200
+Trunk:660 of 1570 [42%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:13400
+Step:PacketReceiptNotification comfirmedBytes:13400
+Trunk:670 of 1570 [42%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:13600
+Step:PacketReceiptNotification comfirmedBytes:13600
+Trunk:680 of 1570 [43%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:13800
+Step:PacketReceiptNotification comfirmedBytes:13800
+Trunk:690 of 1570 [43%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:14000
+Step:PacketReceiptNotification comfirmedBytes:14000
+Trunk:700 of 1570 [44%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:14200
+Step:PacketReceiptNotification comfirmedBytes:14200
+Trunk:710 of 1570 [45%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:14400
+Step:PacketReceiptNotification comfirmedBytes:14400
+Trunk:720 of 1570 [45%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:14600
+Step:PacketReceiptNotification comfirmedBytes:14600
+Trunk:730 of 1570 [46%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:14800
+Step:PacketReceiptNotification comfirmedBytes:14800
+Trunk:740 of 1570 [47%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:15000
+Step:PacketReceiptNotification comfirmedBytes:15000
+Trunk:750 of 1570 [47%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:15200
+Step:PacketReceiptNotification comfirmedBytes:15200
+Trunk:760 of 1570 [48%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:15400
+Step:PacketReceiptNotification comfirmedBytes:15400
+Trunk:770 of 1570 [49%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:15600
+Step:PacketReceiptNotification comfirmedBytes:15600
+Trunk:780 of 1570 [49%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:15800
+Step:PacketReceiptNotification comfirmedBytes:15800
+Trunk:790 of 1570 [50%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:16000
+Step:PacketReceiptNotification comfirmedBytes:16000
+Trunk:800 of 1570 [50%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:16200
+Step:PacketReceiptNotification comfirmedBytes:16200
+Trunk:810 of 1570 [51%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:16400
+Step:PacketReceiptNotification comfirmedBytes:16400
+Trunk:820 of 1570 [52%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:16600
+Step:PacketReceiptNotification comfirmedBytes:16600
+Trunk:830 of 1570 [52%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:16800
+Step:PacketReceiptNotification comfirmedBytes:16800
+Trunk:840 of 1570 [53%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:17000
+Step:PacketReceiptNotification comfirmedBytes:17000
+Trunk:850 of 1570 [54%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:17200
+Step:PacketReceiptNotification comfirmedBytes:17200
+Trunk:860 of 1570 [54%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:17400
+Step:PacketReceiptNotification comfirmedBytes:17400
+Trunk:870 of 1570 [55%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:17600
+Step:PacketReceiptNotification comfirmedBytes:17600
+Trunk:880 of 1570 [56%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:17800
+Step:PacketReceiptNotification comfirmedBytes:17800
+Trunk:890 of 1570 [56%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:18000
+Step:PacketReceiptNotification comfirmedBytes:18000
+Trunk:900 of 1570 [57%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:18200
+Step:PacketReceiptNotification comfirmedBytes:18200
+Trunk:910 of 1570 [57%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:18400
+Step:PacketReceiptNotification comfirmedBytes:18400
+Trunk:920 of 1570 [58%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:18600
+Step:PacketReceiptNotification comfirmedBytes:18600
+Trunk:930 of 1570 [59%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:18800
+Step:PacketReceiptNotification comfirmedBytes:18800
+Trunk:940 of 1570 [59%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:19000
+Step:PacketReceiptNotification comfirmedBytes:19000
+Trunk:950 of 1570 [60%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:19200
+Step:PacketReceiptNotification comfirmedBytes:19200
+Trunk:960 of 1570 [61%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:19400
+Step:PacketReceiptNotification comfirmedBytes:19400
+Trunk:970 of 1570 [61%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:19600
+Step:PacketReceiptNotification comfirmedBytes:19600
+Trunk:980 of 1570 [62%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:19800
+Step:PacketReceiptNotification comfirmedBytes:19800
+Trunk:990 of 1570 [63%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:20000
+Step:PacketReceiptNotification comfirmedBytes:20000
+Trunk:1000 of 1570 [63%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:20200
+Step:PacketReceiptNotification comfirmedBytes:20200
+Trunk:1010 of 1570 [64%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:20400
+Step:PacketReceiptNotification comfirmedBytes:20400
+Trunk:1020 of 1570 [64%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:20600
+Step:PacketReceiptNotification comfirmedBytes:20600
+Trunk:1030 of 1570 [65%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:20800
+Step:PacketReceiptNotification comfirmedBytes:20800
+Trunk:1040 of 1570 [66%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:21000
+Step:PacketReceiptNotification comfirmedBytes:21000
+Trunk:1050 of 1570 [66%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:21200
+Step:PacketReceiptNotification comfirmedBytes:21200
+Trunk:1060 of 1570 [67%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:21400
+Step:PacketReceiptNotification comfirmedBytes:21400
+Trunk:1070 of 1570 [68%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:21600
+Step:PacketReceiptNotification comfirmedBytes:21600
+Trunk:1080 of 1570 [68%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:21800
+Step:PacketReceiptNotification comfirmedBytes:21800
+Trunk:1090 of 1570 [69%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:22000
+Step:PacketReceiptNotification comfirmedBytes:22000
+Trunk:1100 of 1570 [70%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:22200
+Step:PacketReceiptNotification comfirmedBytes:22200
+Trunk:1110 of 1570 [70%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:22400
+Step:PacketReceiptNotification comfirmedBytes:22400
+Trunk:1120 of 1570 [71%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:22600
+Step:PacketReceiptNotification comfirmedBytes:22600
+Trunk:1130 of 1570 [71%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:22800
+Step:PacketReceiptNotification comfirmedBytes:22800
+Trunk:1140 of 1570 [72%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:23000
+Step:PacketReceiptNotification comfirmedBytes:23000
+Trunk:1150 of 1570 [73%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:23200
+Step:PacketReceiptNotification comfirmedBytes:23200
+Trunk:1160 of 1570 [73%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:23400
+Step:PacketReceiptNotification comfirmedBytes:23400
+Trunk:1170 of 1570 [74%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:23600
+Step:PacketReceiptNotification comfirmedBytes:23600
+Trunk:1180 of 1570 [75%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:23800
+Step:PacketReceiptNotification comfirmedBytes:23800
+Trunk:1190 of 1570 [75%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:24000
+Step:PacketReceiptNotification comfirmedBytes:24000
+Trunk:1200 of 1570 [76%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:24200
+Step:PacketReceiptNotification comfirmedBytes:24200
+Trunk:1210 of 1570 [77%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:24400
+Step:PacketReceiptNotification comfirmedBytes:24400
+Trunk:1220 of 1570 [77%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:24600
+Step:PacketReceiptNotification comfirmedBytes:24600
+Trunk:1230 of 1570 [78%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:24800
+Step:PacketReceiptNotification comfirmedBytes:24800
+Trunk:1240 of 1570 [78%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:25000
+Step:PacketReceiptNotification comfirmedBytes:25000
+Trunk:1250 of 1570 [79%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:25200
+Step:PacketReceiptNotification comfirmedBytes:25200
+Trunk:1260 of 1570 [80%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:25400
+Step:PacketReceiptNotification comfirmedBytes:25400
+Trunk:1270 of 1570 [80%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:25600
+Step:PacketReceiptNotification comfirmedBytes:25600
+Trunk:1280 of 1570 [81%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:25800
+Step:PacketReceiptNotification comfirmedBytes:25800
+Trunk:1290 of 1570 [82%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:26000
+Step:PacketReceiptNotification comfirmedBytes:26000
+Trunk:1300 of 1570 [82%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:26200
+Step:PacketReceiptNotification comfirmedBytes:26200
+Trunk:1310 of 1570 [83%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:26400
+Step:PacketReceiptNotification comfirmedBytes:26400
+Trunk:1320 of 1570 [84%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:26600
+Step:PacketReceiptNotification comfirmedBytes:26600
+Trunk:1330 of 1570 [84%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:26800
+Step:PacketReceiptNotification comfirmedBytes:26800
+Trunk:1340 of 1570 [85%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:27000
+Step:PacketReceiptNotification comfirmedBytes:27000
+Trunk:1350 of 1570 [85%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:27200
+Step:PacketReceiptNotification comfirmedBytes:27200
+Trunk:1360 of 1570 [86%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:27400
+Step:PacketReceiptNotification comfirmedBytes:27400
+Trunk:1370 of 1570 [87%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:27600
+Step:PacketReceiptNotification comfirmedBytes:27600
+Trunk:1380 of 1570 [87%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:27800
+Step:PacketReceiptNotification comfirmedBytes:27800
+Trunk:1390 of 1570 [88%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:28000
+Step:PacketReceiptNotification comfirmedBytes:28000
+Trunk:1400 of 1570 [89%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:28200
+Step:PacketReceiptNotification comfirmedBytes:28200
+Trunk:1410 of 1570 [89%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:28400
+Step:PacketReceiptNotification comfirmedBytes:28400
+Trunk:1420 of 1570 [90%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:28600
+Step:PacketReceiptNotification comfirmedBytes:28600
+Trunk:1430 of 1570 [91%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:28800
+Step:PacketReceiptNotification comfirmedBytes:28800
+Trunk:1440 of 1570 [91%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:29000
+Step:PacketReceiptNotification comfirmedBytes:29000
+Trunk:1450 of 1570 [92%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:29200
+Step:PacketReceiptNotification comfirmedBytes:29200
+Trunk:1460 of 1570 [92%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:29400
+Step:PacketReceiptNotification comfirmedBytes:29400
+Trunk:1470 of 1570 [93%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:29600
+Step:PacketReceiptNotification comfirmedBytes:29600
+Trunk:1480 of 1570 [94%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:29800
+Step:PacketReceiptNotification comfirmedBytes:29800
+Trunk:1490 of 1570 [94%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:30000
+Step:PacketReceiptNotification comfirmedBytes:30000
+Trunk:1500 of 1570 [95%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:30200
+Step:PacketReceiptNotification comfirmedBytes:30200
+Trunk:1510 of 1570 [96%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:30400
+Step:PacketReceiptNotification comfirmedBytes:30400
+Trunk:1520 of 1570 [96%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:30600
+Step:PacketReceiptNotification comfirmedBytes:30600
+Trunk:1530 of 1570 [97%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:30800
+Step:PacketReceiptNotification comfirmedBytes:30800
+Trunk:1540 of 1570 [98%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:31000
+Step:PacketReceiptNotification comfirmedBytes:31000
+Trunk:1550 of 1570 [98%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:31200
+Step:PacketReceiptNotification comfirmedBytes:31200
+Trunk:1560 of 1570 [99%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:PacketReceiptNotification MessageType:31400
+Step:PacketReceiptNotification comfirmedBytes:31400
+Trunk:1570 of 1570 [100%]
+Trunk len:1573
+sendPartialPacketsNumberOfTimes:3
+[controlPoint_ValueChanged]Step:ReceiveFirmwareImageSucceded MessageType:
+[controlPoint_ValueChanged]Step:ValidateFirmareSucceded MessageType:
