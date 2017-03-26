@@ -36,6 +36,6 @@ DFU Procedure performed by this application:<br/>
 10)Send Activate and Reset Command (0x0500) <br/>
 
 <br/>
-#TODO#
-- Manage ecprypted packates
-- Update bootloader and softdevice, too
+# TODO # <br/>
+- Manage ecprypted packates <br/>
+- Update bootloader and softdevice, too <br/>
