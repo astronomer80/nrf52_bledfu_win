@@ -1,9 +1,4 @@
 # nrf52_bledfu_win
-<<<<<<< HEAD
-Console windows app to upload an application via BLE.
-
-(Is not ready but stay in touch on the development branch)
-=======
 Console Windows app to upload an application via BLE on nRF52 MCU that has the DFU Service installed.<br/>
 It works only on Windows versions >= 10 and a PC with a Bluetooth 4.0 interface<br/>
 Usage: OTADfu_Console.exe [help] or [scan] or [update -f <bin_file> -d <dat_file> -a <device_address>] or [update -z <zip_file> -a <device_address>]<br/>
@@ -39,4 +34,8 @@ DFU Procedure performed by this application:<br/>
 8)Send bin array contents as a series of packets (burst mode).  Each segment is pkt_payload_size bytes long. For every packet send, wait for notification.<br/>
 9)Send Validate Command (0x0400)<br/>
 10)Send Activate and Reset Command (0x0500) <br/>
->>>>>>> consoleapp
+
+<br/>
+# TODO # <br/>
+- Manage ecprypted packates <br/>
+- Update bootloader and softdevice, too <br/>
