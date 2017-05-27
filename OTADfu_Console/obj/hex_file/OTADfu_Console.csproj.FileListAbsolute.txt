@@ -5,3 +5,4 @@ E:\nrf52_bledfu_win_console\OTADfu_Console\bin\hex_file\OTADfu_Console.exe
 E:\nrf52_bledfu_win_console\OTADfu_Console\bin\hex_file\OTADfu_Console.pdb
 E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.exe
 E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.pdb
+E:\nrf52_bledfu_win_console\OTADfu_Console\obj\hex_file\OTADfu_Console.csprojResolveAssemblyReference.cache

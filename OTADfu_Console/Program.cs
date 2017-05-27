@@ -116,22 +116,28 @@ namespace OTADFUApplication
                         //nrfutil dfu genpkg app_package.zip--application application.hex
                         try
                         {
-                            ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = @"nrfutil.exe", Arguments = "dfu genpkg " + zip_file + " --application " + hex_file, };
-                            Process proc = new Process() { StartInfo = startInfo, };
-                            startInfo.UseShellExecute = false;
-                            startInfo.RedirectStandardOutput = true;
-                            startInfo.RedirectStandardError = true;
-                            proc.Start();
-                            string output = proc.StandardOutput.ReadToEnd();
-                            string error = proc.StandardError.ReadToEnd();
-                            Console.WriteLine(output);
-                            Console.WriteLine(error);
-                            proc.Close();
+                            string nrfutilexefilename = @"nrfutil.exe";
+                            if (!File.Exists(nrfutilexefilename))
+                                Console.WriteLine("nrfutil.exe not found. It should be in the same directory of this executable");
+                            else {
+                                ProcessStartInfo startInfo = new ProcessStartInfo() { FileName = nrfutilexefilename, Arguments = "dfu genpkg " + zip_file + " --application " + hex_file, };
+                                Process proc = new Process() { StartInfo = startInfo, };
+                                startInfo.UseShellExecute = false;
+                                startInfo.RedirectStandardOutput = true;
+                                startInfo.RedirectStandardError = true;
+                                proc.Start();
+                                string output = proc.StandardOutput.ReadToEnd();
+                                string error = proc.StandardError.ReadToEnd();
+                                Console.WriteLine(output);
+                                Console.WriteLine(error);
+                                proc.Close();
 
-                            program.updateFromZip(zip_file, device_address);
+                                program.updateFromZip(zip_file, device_address);
+                            }
                         }
                         catch (Exception ex)
                         {
+                            Console.WriteLine("Error with NRFUTIL");
                             Console.WriteLine(ex.StackTrace);
                         }
                     }
