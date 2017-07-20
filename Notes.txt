@@ -1,0 +1,4 @@
+Reference to add:
+byte[].AsBuffer:
+System.Runtime.InteropServices.WindowsRuntime
+System.Runtime.InteropServices

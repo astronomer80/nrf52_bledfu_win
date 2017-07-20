@@ -1,0 +1,7 @@
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\scan\OTADfu_Console2.exe.config
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\scan\OTADfu_Console2.exe
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\scan\System.Runtime.WindowsRuntime.dll
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\scan\Windows.winmd
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\scan\System.Runtime.WindowsRuntime.xml
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\obj\scan\OTADfu_Console2.exe
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\obj\scan\OTADfu_Console.csprojResolveAssemblyReference.cache

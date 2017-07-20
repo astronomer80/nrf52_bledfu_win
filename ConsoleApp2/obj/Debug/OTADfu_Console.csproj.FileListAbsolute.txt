@@ -1,0 +1,9 @@
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\obj\Debug\OTADfu_Console.csprojResolveAssemblyReference.cache
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\Debug\OTADfu_Console2.exe.config
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\Debug\OTADfu_Console2.exe
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\Debug\OTADfu_Console2.pdb
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\Debug\System.Runtime.WindowsRuntime.dll
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\Debug\Windows.winmd
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\Debug\System.Runtime.WindowsRuntime.xml
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\obj\Debug\OTADfu_Console2.exe
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\obj\Debug\OTADfu_Console2.pdb

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 
-using System.Runtime;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Enumeration.Pnp;
@@ -11,8 +10,9 @@ using Windows.UI.Core;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage;
 using Common.Service.GattService;
-using Common.Utility;
 using System.IO;
+using ConsoleApp2;
+using Common.Utility;
 
 namespace OTADFUApplication
 {
@@ -345,7 +345,7 @@ namespace OTADFUApplication
             this.dat_file = dat_file;
             try
             {
-                deviceContainerId = "{" + device.Properties["System.Devices.ContainerId"] + "}";
+                //deviceContainerId = "{" + device.Properties["System.Devices.ContainerId"] + "}";
 
                 service = await GattDeviceService.FromIdAsync(device.Id);
                 if (service != null)
@@ -482,7 +482,9 @@ namespace OTADFUApplication
             try
             {
                 // Obtain the characteristic for which notifications are to be received
+                //controlPoint = service.GetCharacteristicsForUuidAsync(new Guid(DFUControlPoint))[CHARACTERISTIC_INDEX];
                 controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint))[CHARACTERISTIC_INDEX];
+
 
                 // While encryption is not required by all devices, if encryption is supported by the device,
                 // it can be enabled by setting the ProtectionLevel property of the Characteristic object.

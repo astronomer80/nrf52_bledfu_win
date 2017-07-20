@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -13,7 +14,7 @@ using Windows.Devices.Enumeration;
 
 namespace ConsoleApp2
 {
-    class Program
+    public class Program
     {
         /// <summary>
         /// The version of the application
@@ -30,10 +31,9 @@ namespace ConsoleApp2
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Test"); 
+            Console.WriteLine("Test");
 
             Program program = new Program();
-            program.discovery_draft();
 
             Console.WriteLine(program.app_name + " version " + program.version);
 
@@ -64,6 +64,7 @@ namespace ConsoleApp2
             else if (args[0] == "scan")
             {
                 program.MainTask(@".\logs\", true, "", "", "");
+                program.discovery_draft();
 
             }
             //Update procedure
@@ -180,9 +181,12 @@ namespace ConsoleApp2
             Console.WriteLine("[DeviceWatcher_EnumerationCompleted]");
         }
 
-        private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
+        private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate device)
         {
-            Console.WriteLine("[DeviceWatcher_Removed]" + args.Id);
+            //Console.WriteLine("[DeviceWatcher_Removed]" + device.Id);
+
+            String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
+            Console.WriteLine("Removed Device address:[" + deviceAddress + "]");
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
@@ -190,15 +194,22 @@ namespace ConsoleApp2
             throw new NotImplementedException();
         }
 
-        private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
+        private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation device)
         {
-            Console.WriteLine("[DeviceWatcher_Added]" + args.Name + " ID:" + args.Id);
+
+            //Console.WriteLine("[DeviceWatcher_Added]" + device.Name + " ID:" + device.Id);
+            String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
+
+            Console.WriteLine("Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
+
+
+
         }
 
         async void ConnectDevice(DeviceInformation deviceInfo)
         {
             // Note: BluetoothLEDevice.FromIdAsync must be called from a UI thread because it may prompt for consent.
-            //BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.Id);
+            BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(deviceInfo.Id);
             // ...
         }
 
@@ -311,7 +322,7 @@ namespace ConsoleApp2
             //this.log("MainTask", "");
             try
             {
-                await readevices(scanonly, bin_file, dat_file, device_address);
+                await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)
             {
@@ -325,7 +336,7 @@ namespace ConsoleApp2
         /// <param name="scanonly">If true return only the list of paired devices. 
         /// If false starts the OTA for the device address defined at the argument of Main</param>
         /// <returns></returns>
-        private async Task readevices(bool scanonly, String bin_file, String dat_file, String given_device_address)
+        private async Task scanpaireddevices(bool scanonly, String bin_file, String dat_file, String given_device_address)
         {
             this.log("Scanning BLE devices...", "");
             Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
