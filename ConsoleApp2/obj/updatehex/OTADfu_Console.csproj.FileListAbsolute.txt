@@ -1,0 +1,2 @@
+E:\nrf52_bledfu_win2\ConsoleApp2\bin\updatehex\OTADfu_Console2.exe.config
+E:\nrf52_bledfu_win2\ConsoleApp2\obj\updatehex\OTADfu_Console.csprojResolveAssemblyReference.cache

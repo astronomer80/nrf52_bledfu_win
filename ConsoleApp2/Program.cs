@@ -1,11 +1,8 @@
 ﻿using OTADFUApplication;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
@@ -27,12 +24,11 @@ namespace ConsoleApp2
         /// </summary>
         String logPath = @".\logs\";
         public static Boolean verboseMode = false;
-
+        bool scanonly, devicefound;
+        String bin_file, dat_file, given_device_address;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Test");
-
             Program program = new Program();
 
             Console.WriteLine(program.app_name + " version " + program.version);
@@ -75,7 +71,8 @@ namespace ConsoleApp2
 
                 if (args.Length >= 7 && args[1] == "-f" && args[3] == "-d" && args[5] == "-a")
                 {
-                    Console.WriteLine("Update from bin and dat files");
+                    program.given_device_address = args[6];
+                    Console.WriteLine("Update from bin and dat files of the device address:" + program.given_device_address);
                     if (!File.Exists(args[2]))
                         Console.WriteLine("Error: the " + args[2] + " file doesn't exist");
                     if (!File.Exists(args[4]))
@@ -86,7 +83,8 @@ namespace ConsoleApp2
                 }
                 else if (args.Length >= 5 && args[1] == "-h" && args[3] == "-a")
                 {
-                    Console.WriteLine("Update from hex/bin file");
+                    program.given_device_address = args[4];
+                    Console.WriteLine("Update from hex/bin file of the device address:" + program.given_device_address);
                     String hex_file = args[2];
                     if (!File.Exists(hex_file))
                         Console.WriteLine("Error: the " + hex_file + " file doesn't exist");
@@ -94,8 +92,7 @@ namespace ConsoleApp2
                     {
                         String zip_file = hex_file.Replace(".hex", ".zip").Replace(".bin", ".zip");
                         //Console.WriteLine(hex_file);
-                        //Console.WriteLine(zip_file);
-                        String device_address = args[4];
+                        //Console.WriteLine(zip_file);                        
                         //nrfutil dfu genpkg app_package.zip--application application.hex
                         try
                         {
@@ -116,7 +113,7 @@ namespace ConsoleApp2
                                 Console.WriteLine(error);
                                 proc.Close();
 
-                                program.updateFromZip(zip_file, device_address);
+                                program.updateFromZip(zip_file, program.given_device_address);
                             }
                         }
                         catch (Exception ex)
@@ -128,7 +125,8 @@ namespace ConsoleApp2
                 }
                 else if (args.Length >= 5 && args[1] == "-z" && args[3] == "-a")
                 {
-                    Console.WriteLine("Update from zipped package");
+                    program.given_device_address = args[4];
+                    Console.WriteLine("Update from zipped package of the device address:" + program.given_device_address);
                     program.updateFromZip(args[2], args[4]);
                 }
                 else
@@ -147,8 +145,12 @@ namespace ConsoleApp2
 
         private void discovery_draft()
         {
+            Console.WriteLine("Discovering devices...");
             // Query for extra properties you want returned
             string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
+            Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
+            //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
+            
 
             DeviceWatcher deviceWatcher =
                         DeviceInformation.CreateWatcher(
@@ -196,14 +198,37 @@ namespace ConsoleApp2
 
         private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation device)
         {
-
             //Console.WriteLine("[DeviceWatcher_Added]" + device.Name + " ID:" + device.Id);
             String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
 
-            Console.WriteLine("Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
+            Console.WriteLine("Found Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
+            Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
+            //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
+            String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
+            String[] param = new string[] { "System.Devices.ContainerId" };
 
+            //foreach (var prop in device.Properties) {
+            //    Console.WriteLine(prop.Key + " " + prop.Value);                        
+            //}                    
+            //Console.WriteLine("Scan: " + scanonly + " Given:" + given_device_address + " Found:" + deviceAddress);                        
 
+            if (!scanonly && given_device_address == deviceAddress)
+            //TODO Only for test
+            //if (!scanonly && true)
+            {
+                this.devicefound = true;
+                try
+                {
+                    //DFUService dfs =DFUService.Instance;
+                    //await dfs.InitializeServiceAsync(device);
+                    DFUService.Instance.InitializeServiceAsync(device, this, bin_file, dat_file);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
+            }            
         }
 
         async void ConnectDevice(DeviceInformation deviceInfo)
@@ -267,8 +292,12 @@ namespace ConsoleApp2
         {
             if (!File.Exists(zip_file))
                 Console.WriteLine("Error: the " + zip_file + " file doesn't exist");
+            else if (!zip_file.Contains(".zip")) {
+                Console.WriteLine("Error: the " + zip_file + " is not a ZIP file");
+            }
             else
             {
+                Console.WriteLine(zip_file + " file found");
                 String file_dir = Path.GetDirectoryName(zip_file);
                 try
                 {
@@ -322,7 +351,12 @@ namespace ConsoleApp2
             //this.log("MainTask", "");
             try
             {
-                await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
+                this.scanonly = scanonly;
+                this.bin_file = bin_file;
+                this.dat_file = dat_file;
+                this.given_device_address = device_address;
+                this.discovery_draft();
+                //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)
             {
@@ -338,7 +372,7 @@ namespace ConsoleApp2
         /// <returns></returns>
         private async Task scanpaireddevices(bool scanonly, String bin_file, String dat_file, String given_device_address)
         {
-            this.log("Scanning BLE devices...", "");
+            this.log("Scanning paired BLE devices...", "");
             Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
             //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
             String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);

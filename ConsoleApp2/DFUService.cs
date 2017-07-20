@@ -13,6 +13,7 @@ using Common.Service.GattService;
 using System.IO;
 using ConsoleApp2;
 using Common.Utility;
+using Windows.Devices.Bluetooth;
 
 namespace OTADFUApplication
 {
@@ -345,23 +346,38 @@ namespace OTADFUApplication
             this.dat_file = dat_file;
             try
             {
-                //deviceContainerId = "{" + device.Properties["System.Devices.ContainerId"] + "}";
-
-                service = await GattDeviceService.FromIdAsync(device.Id);
-                if (service != null)
+                /*
+                Guid UUID = new Guid(DFUService.DFUService_UUID); 
+                String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
+                String[] param = new string[] { "System.Devices.ContainerId" };
+                DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(service, param);
+                */
+                BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
+                Console.WriteLine("Type:" + bluetoothLeDevice.BluetoothAddressType);
+                Console.WriteLine("ConnectionStatus:" + bluetoothLeDevice.ConnectionStatus);
+                Console.WriteLine("Name:" + bluetoothLeDevice.Name);                
+                Console.WriteLine("Appearance:" + bluetoothLeDevice.Appearance);
+                
+                //Perform the connection to the device
+                GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync();
+                if (result.Status == GattCommunicationStatus.Success)
                 {
-                    IsServiceInitialized = true;
-                    await StartFirmwareUpdate();
-                }
-                else
-                {
-                    Console.WriteLine("Access to the device is denied, because the application was not granted access, " +
-                        "or the device is currently in use by another application.");
-                }
+                    Console.WriteLine("ConnectionStatus:" + bluetoothLeDevice.ConnectionStatus);
+                    var services = result.Services;
+                    foreach(var service_ in services) {
+                        Console.WriteLine("UUID "+service_.Uuid);
+                        if (service_.Uuid == new Guid(DFUService.DFUService_UUID)) { //NRF52 DFU Service
+                            IsServiceInitialized = true;                            
+                            await StartFirmwareUpdate(service_);
+                        }
+                    }
+                    
+                    // ...
+                }                
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR: Accessing2 your device failed." + Environment.NewLine + e.Message);
+                Console.WriteLine("ERROR: Accessing2 your device failed." + Environment.NewLine + e.Message + "\n"+e.StackTrace);
             }
         }
 
@@ -913,8 +929,9 @@ namespace OTADFUApplication
         /// StartFirmwareUpdate
         /// </summary>
         /// <returns></returns>
-        private async Task StartFirmwareUpdate()
+        private async Task StartFirmwareUpdate(GattDeviceService service_)
         {
+            service = service_;
             controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint)).FirstOrDefault();
             controlPoint.ValueChanged += controlPoint_ValueChanged;
             //controlPoint.add_ValueChanged(controlPoint_ValueChanged);

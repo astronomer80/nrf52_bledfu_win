@@ -1,6 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'scan|AnyCPU'">
-    <StartArguments>scan</StartArguments>
+    <StartArguments>update -h E:\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a d4:8c:09:b0:33:bf</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'update hex|AnyCPU'">
+    <StartArguments>update -h E:\nrf52_bledfu_win_console\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a e853c73cfce9</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'updatehex|AnyCPU'">
+    <StartArguments>update -z E:\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a d48c09b033bf</StartArguments>
   </PropertyGroup>
 </Project>

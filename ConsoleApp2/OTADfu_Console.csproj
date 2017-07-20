@@ -39,6 +39,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'scan|AnyCPU'">
     <OutputPath>bin\scan\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'update|AnyCPU'">
+    <OutputPath>bin\update\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'update hex|AnyCPU'">
+    <OutputPath>bin\update hex\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'updatehex|AnyCPU'">
+    <OutputPath>bin\updatehex\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />

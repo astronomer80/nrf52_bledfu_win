@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OTADfu_Console", "ConsoleApp2\OTADfu_Console.csproj", "{9A5C0E2F-405F-440A-806B-7476FD908626}"
 EndProject
@@ -10,6 +10,7 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 		scan|Any CPU = scan|Any CPU
+		updatehex|Any CPU = updatehex|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9A5C0E2F-405F-440A-806B-7476FD908626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -18,6 +19,8 @@ Global
 		{9A5C0E2F-405F-440A-806B-7476FD908626}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A5C0E2F-405F-440A-806B-7476FD908626}.scan|Any CPU.ActiveCfg = scan|Any CPU
 		{9A5C0E2F-405F-440A-806B-7476FD908626}.scan|Any CPU.Build.0 = scan|Any CPU
+		{9A5C0E2F-405F-440A-806B-7476FD908626}.updatehex|Any CPU.ActiveCfg = updatehex|Any CPU
+		{9A5C0E2F-405F-440A-806B-7476FD908626}.updatehex|Any CPU.Build.0 = updatehex|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

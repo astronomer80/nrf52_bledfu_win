@@ -7,3 +7,8 @@ C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin
 C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\bin\Debug\System.Runtime.WindowsRuntime.xml
 C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\obj\Debug\OTADfu_Console2.exe
 C:\Users\aferr\Documents\Visual Studio 2017\Projects\ConsoleApp2\ConsoleApp2\obj\Debug\OTADfu_Console2.pdb
+E:\nrf52_bledfu_win2\ConsoleApp2\bin\Debug\OTADfu_Console2.exe.config
+E:\nrf52_bledfu_win2\ConsoleApp2\obj\Debug\OTADfu_Console2.exe
+E:\nrf52_bledfu_win2\ConsoleApp2\obj\Debug\OTADfu_Console2.pdb
+E:\nrf52_bledfu_win2\ConsoleApp2\bin\Debug\OTADfu_Console2.exe
+E:\nrf52_bledfu_win2\ConsoleApp2\bin\Debug\OTADfu_Console2.pdb
