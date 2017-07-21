@@ -2,3 +2,9 @@ Reference to add:
 byte[].AsBuffer:
 System.Runtime.InteropServices.WindowsRuntime
 System.Runtime.InteropServices
+
+
+
+update -h E:\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a d4:8c:09:b0:33:bf
+update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a ec:31:b4:5d:a4:5c
+

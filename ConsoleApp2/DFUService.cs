@@ -14,6 +14,9 @@ using System.IO;
 using ConsoleApp2;
 using Common.Utility;
 using Windows.Devices.Bluetooth;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.System;
 
 namespace OTADFUApplication
 {
@@ -42,7 +45,7 @@ namespace OTADFUApplication
     public class DFUService
     {
         #region Properties
-        private GattDeviceService service { get; set; }
+        private static GattDeviceService service { get; set; }
         private GattCharacteristic controlPoint { get; set; }
         private GattCharacteristic packet { get; set; }
         private GattCharacteristic dFUVersion { get; set; }
@@ -64,7 +67,7 @@ namespace OTADFUApplication
         public static String DFUService_UUID = "00001530-1212-efde-1523-785feabcd123";
         //UUID to send commands
         public static String DFUControlPoint = "00001531-1212-efde-1523-785feabcd123";
-        //UUID to send data
+        //UUID to send data 
         public static String DFUPacket = "00001532-1212-efde-1523-785feabcd123";
         //UUID to check the DFU version: buttonless or not.
         public static String DFUVersion = "00001534-1212-efde-1523-785feabcd123";
@@ -335,9 +338,12 @@ namespace OTADFUApplication
         }
 
         /// <summary>
-        /// 
+        /// Connect to the device, check if there's the DFU Service and start the firmware update
         /// </summary>
-        /// <param name="device"></param>
+        /// <param name="device">The device discovered</param>
+        /// <param name="program">The main class (Could be removed)</param>
+        /// <param name="bin_file">The binary or hex file to upload</param>
+        /// <param name="dat_file">The descriptor file</param>
         /// <returns></returns>
         public async Task InitializeServiceAsync(DeviceInformation device, Program program, String bin_file, String dat_file)
         {
@@ -346,38 +352,205 @@ namespace OTADFUApplication
             this.dat_file = dat_file;
             try
             {
+                var deviceAddress = "N/A";
+                if (device.Id.Contains("-") )
+                    deviceAddress = device.Id.Split('-')[1];
                 /*
                 Guid UUID = new Guid(DFUService.DFUService_UUID); 
                 String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
                 String[] param = new string[] { "System.Devices.ContainerId" };
                 DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(service, param);
                 */
+                Console.WriteLine("Device match:" + deviceAddress);
+
                 BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
-                Console.WriteLine("Type:" + bluetoothLeDevice.BluetoothAddressType);
-                Console.WriteLine("ConnectionStatus:" + bluetoothLeDevice.ConnectionStatus);
                 Console.WriteLine("Name:" + bluetoothLeDevice.Name);                
-                Console.WriteLine("Appearance:" + bluetoothLeDevice.Appearance);
                 
                 //Perform the connection to the device
                 GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync();
                 if (result.Status == GattCommunicationStatus.Success)
-                {
-                    Console.WriteLine("ConnectionStatus:" + bluetoothLeDevice.ConnectionStatus);
+                {                    
+                    Console.WriteLine("Device "+ deviceAddress + " connected. Updating firmware...");
+                    //Scan the available services
                     var services = result.Services;
                     foreach(var service_ in services) {
                         Console.WriteLine("UUID "+service_.Uuid);
+                        //If DFUService found...
                         if (service_.Uuid == new Guid(DFUService.DFUService_UUID)) { //NRF52 DFU Service
-                            IsServiceInitialized = true;                            
-                            await StartFirmwareUpdate(service_);
+                            Console.WriteLine("DFU Service found");
+                            IsServiceInitialized = true;
+                            service = service_;
+                            //Scan the available characteristics
+                            GattCharacteristicsResult result_ = await service.GetCharacteristicsAsync();
+                            if (result_.Status == GattCommunicationStatus.Success)
+                            {
+                                var characteristics = result_.Characteristics;
+                                foreach (var characteristic in characteristics)
+                                {
+                                    Console.WriteLine("UUID " + characteristic.AttributeHandle + "-");
+                                    Console.WriteLine("Handle " + characteristic.Uuid + "-");
+                                    if (characteristic.Uuid.ToString() == DFUService.DFUControlPoint) {
+                                        Console.WriteLine("DFU Control point found " + characteristic.UserDescription);
+                                        controlPoint = characteristic;
+                                        //await startFirmwareUpdate();
+                                        UNUSED_startFirmwareUpdate__();
+                                    }
+                                }
+                            }
+                            
                         }
                     }
-                    
-                    // ...
+                }
+                else
+                {
+                    Console.WriteLine("Status error: " + result.Status.ToString() + " need to restarte the device");
+                
                 }                
             }
             catch (Exception e)
             {
                 Console.WriteLine("ERROR: Accessing2 your device failed." + Environment.NewLine + e.Message + "\n"+e.StackTrace);
+            }
+        }
+
+        /// <summary>
+        /// StartFirmwareUpdate
+        /// </summary>
+        /// <returns></returns>
+        private async Task startFirmwareUpdate()
+        {
+            if (controlPoint.Uuid.ToString() != DFUService.DFUControlPoint) {
+                Console.WriteLine("ERROR: Control point not properly set");
+                return;
+            }
+            try
+            {
+                Console.WriteLine("Starting firmware update...");
+                controlPoint.ValueChanged += controlPoint_ValueChanged;
+                if (await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
+                {
+                    Console.WriteLine("ERROR: Device not connected succesfully. Please ensure that the board has a DFU BLE Service.");
+                    return;
+                }
+                //If the board is not in DFU mode is necessary to switch in bootloader mode
+                if (await checkDFUStatus() == 1)
+                    await this.switchOnBootLoader(controlPoint);
+                try
+                {
+                    //# Send 'START DFU' + Application Command 0x01
+                    if (await this.switchOnBootLoader(controlPoint))
+                    {
+                        await this.sendImageSize();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            catch (Exception e) { Console.WriteLine(e.Message + " " + e.StackTrace); }
+        }
+
+        /// <summary>
+        /// Configure the Bluetooth device to send notifications whenever the Characteristic value changes
+        /// UNUSED
+        /// </summary>
+        private async Task UNUSED_startFirmwareUpdate__()
+        {
+            if (controlPoint.Uuid.ToString() != DFUService.DFUControlPoint)
+            {
+                Console.WriteLine("ERROR: Control point not properly set");
+                return;
+            }
+            try
+            {
+                // Obtain the characteristic for which notifications are to be received
+                //controlPoint = service.GetCharacteristicsForUuidAsync(new Guid(DFUControlPoint))[CHARACTERISTIC_INDEX];
+                //controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint))[CHARACTERISTIC_INDEX];
+
+
+                // While encryption is not required by all devices, if encryption is supported by the device,
+                // it can be enabled by setting the ProtectionLevel property of the Characteristic object.
+                // All subsequent operations on the characteristic will work over an encrypted link.
+                //characteristic.ProtectionLevel = GattProtectionLevel.EncryptionRequired; //Not necessary
+
+                // Register the event handler for receiving notifications
+                controlPoint.ValueChanged += controlPoint_ValueChanged;
+
+                // In order to avoid unnecessary communication with the device, determine if the device is already 
+                // correctly configured to send notifications.
+                // By default ReadClientCharacteristicConfigurationDescriptorAsync will attempt to get the current
+                // value from the system cache and communication with the device is not typically required.
+                var currentDescriptorValue = await controlPoint.ReadClientCharacteristicConfigurationDescriptorAsync();
+
+                if (currentDescriptorValue.Status == GattCommunicationStatus.Success)
+                {
+                    log("Descriptor com success " + controlPoint.UserDescription, "");
+                }
+                else
+                    log("Descriptor com UNsuccess " + controlPoint.UserDescription, "");
+
+                //Test
+                //StartDeviceConnectionWatcher();
+
+                GattCommunicationStatus status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE);
+                if (status == GattCommunicationStatus.Unreachable)
+                {
+                    Console.WriteLine("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings.");
+                    return;
+                }
+
+                if ((currentDescriptorValue.Status != GattCommunicationStatus.Success) ||
+                    (currentDescriptorValue.ClientCharacteristicConfigurationDescriptor != CHARACTERISTIC_NOTIFICATION_TYPE))
+                {
+                    //Go here only when is a first time the device is used
+
+                    log("Success " + service.DeviceId, "");
+                    // Set the Client Characteristic Configuration Descriptor to enable the device to send notifications
+                    // when the Characteristic value changes                    
+                    status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE);
+                    if (status == GattCommunicationStatus.Unreachable)
+                    {
+                        // Register a PnpObjectWatcher to detect when a connection to the device is established,
+                        // such that the application can retry device configuration.
+                        //StartDeviceConnectionWatcher();
+                        log("Unreacheable", "DFUService");
+                    }
+                    else
+                    {
+                        log("GattCommunicationStatus Success", "DFUService");
+                        int dfuVersion = await checkDFUStatus();
+                        if (dfuVersion == 1)
+                            await switchOnBootLoader(controlPoint);
+
+                        if (status == GattCommunicationStatus.Success)
+                            await switchOnBootLoader(controlPoint);
+                    }
+                }
+                else
+                {
+                    //TODO. Find a way to remove e re-pair the device automatically
+                    //rootPage.NotifyUser("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings.", NotifyType.ErrorMessage);
+                }
+                //TODO: Correct this part
+                int dfuVersion_ = await checkDFUStatus();
+                if (dfuVersion_ == 1)
+                    await this.switchOnBootLoader(controlPoint);
+
+                //dfuVersion_ = await checkDFUStatus();
+                try
+                {
+                    if (await this.switchOnBootLoader(controlPoint))
+                        await this.sendImageSize();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("ERROR: Accessing1 your device failed." + Environment.NewLine + e.Message);
             }
         }
 
@@ -392,13 +565,29 @@ namespace OTADFUApplication
 
         }
 
+        public string BluetoothIsOffMessageTitle = "Can't scan devices";
+        public string BluetoothIsOffMessageContent = "Bluetooth is turned off";
+
         public void ShowBluetoothOffErrorMessage()
         {
-            /*
+            
             var alternative1 = new UICommand("Go to settings", new UICommandInvokedHandler(GoToBluetoothSettingPage), 0);
             var alternative2 = new UICommand("Close", new UICommandInvokedHandler(CloseBluetoothIsOffMessage), 1);
-            ShowMessage(BluetoothIsOffMessageTitle, BluetoothIsOffMessageContent, alternative1, alternative2);
-            */
+            //showMessage(BluetoothIsOffMessageTitle, BluetoothIsOffMessageContent, alternative1, alternative2);
+            
+        }
+
+        
+
+        private void CloseBluetoothIsOffMessage(IUICommand command)
+        { }
+
+        private async void GoToBluetoothSettingPage(IUICommand command)
+        {
+            await Window.Current.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                await Launcher.LaunchUriAsync(new Uri("ms-settings-bluetooth:"));
+            });
         }
 
         public async Task<bool> IsBluetoothSettingOn()
@@ -483,108 +672,6 @@ namespace OTADFUApplication
             catch (Exception e)
             {
                 return false;
-            }
-        }
-
-
-
-
-        /// <summary>
-        /// Configure the Bluetooth device to send notifications whenever the Characteristic value changes
-        /// UNUSED
-        /// </summary>
-        private async Task StartFirmwareUpdate_()
-        {
-            try
-            {
-                // Obtain the characteristic for which notifications are to be received
-                //controlPoint = service.GetCharacteristicsForUuidAsync(new Guid(DFUControlPoint))[CHARACTERISTIC_INDEX];
-                controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint))[CHARACTERISTIC_INDEX];
-
-
-                // While encryption is not required by all devices, if encryption is supported by the device,
-                // it can be enabled by setting the ProtectionLevel property of the Characteristic object.
-                // All subsequent operations on the characteristic will work over an encrypted link.
-                //characteristic.ProtectionLevel = GattProtectionLevel.EncryptionRequired; //Not necessary
-
-                // Register the event handler for receiving notifications
-                controlPoint.ValueChanged += controlPoint_ValueChanged;
-               // controlPoint.add_ValueChanged(controlPoint_ValueChanged);
-
-                // In order to avoid unnecessary communication with the device, determine if the device is already 
-                // correctly configured to send notifications.
-                // By default ReadClientCharacteristicConfigurationDescriptorAsync will attempt to get the current
-                // value from the system cache and communication with the device is not typically required.
-                var currentDescriptorValue = await controlPoint.ReadClientCharacteristicConfigurationDescriptorAsync();
-
-                if (currentDescriptorValue.Status == GattCommunicationStatus.Success)
-                {
-                    log("Descriptor com success " + controlPoint.UserDescription, "");
-                }
-                else
-                    log("Descriptor com UNsuccess " + controlPoint.UserDescription, "");
-
-                //Test
-                //StartDeviceConnectionWatcher();
-
-                GattCommunicationStatus status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE);
-                if (status == GattCommunicationStatus.Unreachable)
-                {
-                    Console.WriteLine("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings.");
-                    return;
-                }
-
-                if ((currentDescriptorValue.Status != GattCommunicationStatus.Success) ||
-                    (currentDescriptorValue.ClientCharacteristicConfigurationDescriptor != CHARACTERISTIC_NOTIFICATION_TYPE))
-                {
-                    //Go here only when is a first time the device is used
-
-                    log("Success " + service.DeviceId, "");
-                    // Set the Client Characteristic Configuration Descriptor to enable the device to send notifications
-                    // when the Characteristic value changes                    
-                    status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE);
-                    if (status == GattCommunicationStatus.Unreachable)
-                    {
-                        // Register a PnpObjectWatcher to detect when a connection to the device is established,
-                        // such that the application can retry device configuration.
-                        //StartDeviceConnectionWatcher();
-                        log("Unreacheable", "DFUService");
-                    }
-                    else
-                    {
-                        log("GattCommunicationStatus Success", "DFUService");
-                        int dfuVersion = await checkDFUStatus();
-                        if (dfuVersion == 1)
-                            await switchOnBootLoader(controlPoint);
-
-                        if (status == GattCommunicationStatus.Success)
-                            await switchOnBootLoader(controlPoint);
-                    }
-                }
-                else
-                {
-                    //TODO. Find a way to remove e re-pair the device automatically
-                    //rootPage.NotifyUser("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings.", NotifyType.ErrorMessage);
-                }
-                //TODO: Correct this part
-                int dfuVersion_ = await checkDFUStatus();
-                if (dfuVersion_ == 1)
-                    await this.switchOnBootLoader(controlPoint);
-
-                //dfuVersion_ = await checkDFUStatus();
-                try
-                {
-                    if (await this.switchOnBootLoader(controlPoint))
-                        await this.sendImageSize();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("ERROR: Accessing1 your device failed." + Environment.NewLine + e.Message);
             }
         }
 
@@ -925,38 +1012,7 @@ namespace OTADFUApplication
             }
         }
 
-        /// <summary>
-        /// StartFirmwareUpdate
-        /// </summary>
-        /// <returns></returns>
-        private async Task StartFirmwareUpdate(GattDeviceService service_)
-        {
-            service = service_;
-            controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint)).FirstOrDefault();
-            controlPoint.ValueChanged += controlPoint_ValueChanged;
-            //controlPoint.add_ValueChanged(controlPoint_ValueChanged);
-            if (await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
-            {
-                Console.WriteLine("ERROR: Device not connected succesfully. Please ensure that the board has a DFU BLE Service.");
-                return;
-            }
-
-            //If the board is not in DFU mode is necessary to switch in bootloader mode
-            if (await checkDFUStatus() == 1)
-                await this.switchOnBootLoader(controlPoint);
-            try
-            {
-                //# Send 'START DFU' + Application Command 0x01
-                if (await this.switchOnBootLoader(controlPoint))
-                {
-                    await this.sendImageSize();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
+        
 
         /// <summary>
         /// Invoked when Windows receives data from your Bluetooth device.
@@ -965,6 +1021,8 @@ namespace OTADFUApplication
         /// <param name="args">The new characteristic value sent by the device.</param>
         private async void controlPoint_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
+
+            Console.WriteLine("Test4");
             var data = new byte[args.CharacteristicValue.Length];
 
             DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
+using Windows.UI.Popups;
 
 namespace ConsoleApp2
 {
@@ -148,9 +149,6 @@ namespace ConsoleApp2
             Console.WriteLine("Discovering devices...");
             // Query for extra properties you want returned
             string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" };
-            Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
-            //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
-            
 
             DeviceWatcher deviceWatcher =
                         DeviceInformation.CreateWatcher(
@@ -162,7 +160,7 @@ namespace ConsoleApp2
             // Added, Updated and Removed are required to get all nearby devices
             deviceWatcher.Added += DeviceWatcher_Added;
             deviceWatcher.Updated += DeviceWatcher_Updated;
-            deviceWatcher.Removed += DeviceWatcher_Removed;
+            //deviceWatcher.Removed += DeviceWatcher_Removed;
 
             // EnumerationCompleted and Stopped are optional to implement.
             deviceWatcher.EnumerationCompleted += DeviceWatcher_EnumerationCompleted;
@@ -196,10 +194,15 @@ namespace ConsoleApp2
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Event called when a new device is discovered
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="device"></param>
         private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation device)
         {
             //Console.WriteLine("[DeviceWatcher_Added]" + device.Name + " ID:" + device.Id);
-            String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
+            String deviceAddress = device.Id.Split('-')[1];
 
             Console.WriteLine("Found Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
             Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
@@ -347,6 +350,8 @@ namespace ConsoleApp2
         /// <returns></returns>
         public async Task MainTask(String logPath, bool scanonly, String bin_file, String dat_file, String device_address)
         {
+            MessageDialog showDialog = new MessageDialog("Hi Welcome to Windows 10");
+            showDialog.ShowAsync();
             this.createLog(logPath);
             //this.log("MainTask", "");
             try
