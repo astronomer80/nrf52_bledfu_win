@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'scan|AnyCPU'">
-    <StartArguments>update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a ec:31:b4:5d:a4:5b</StartArguments>
+    <StartArguments>update -f E:\nrf52_bledfu_win2\app_blink_dfu_500\app_blink_dfu_500.bin -d E:\nrf52_bledfu_win2\app_blink_dfu_500\app_blink_dfu_500.dat -a d4:8c:09:b0:33:be</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'update hex|AnyCPU'">
     <StartArguments>update -h E:\nrf52_bledfu_win_console\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a e853c73cfce9</StartArguments>
@@ -11,5 +11,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartArguments>update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a ec:31:b4:5d:a4:5c</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'updatebin|AnyCPU'">
+    <StartArguments>update -f E:\nrf52_bledfu_win2\app_blink_dfu_500\app_blink_dfu_500.bin -d E:\nrf52_bledfu_win2\app_blink_dfu_500\app_blink_dfu_500.dat -a ec:31:b4:5d:a4:5b</StartArguments>
+    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
   </PropertyGroup>
 </Project>

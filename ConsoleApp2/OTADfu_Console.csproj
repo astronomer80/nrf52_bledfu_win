@@ -47,6 +47,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'updatehex|AnyCPU'">
     <OutputPath>bin\updatehex\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'updatebin|AnyCPU'">
+    <OutputPath>bin\updatebin\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />

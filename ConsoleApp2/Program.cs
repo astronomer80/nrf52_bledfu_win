@@ -24,7 +24,7 @@ namespace ConsoleApp2
         /// The default path of the log file
         /// </summary>
         String logPath = @".\logs\";
-        public static Boolean verboseMode = false;
+        public static Boolean verboseMode = true;
         bool scanonly, devicefound;
         String bin_file, dat_file, given_device_address;
 
@@ -79,7 +79,7 @@ namespace ConsoleApp2
                     if (!File.Exists(args[4]))
                         Console.WriteLine("Error: the " + args[4] + " file doesn't exist");
                     else
-                        program.MainTask(Path.GetDirectoryName(args[3]), false, args[2], args[4], args[6]);
+                        program.MainTask(Path.GetDirectoryName(args[4]), false, args[2], args[4], args[6]);
 
                 }
                 else if (args.Length >= 5 && args[1] == "-h" && args[3] == "-a")
@@ -223,8 +223,10 @@ namespace ConsoleApp2
                 try
                 {
                     //DFUService dfs =DFUService.Instance;
-                    //await dfs.InitializeServiceAsync(device);
-                    DFUService.Instance.InitializeServiceAsync(device, this, bin_file, dat_file);
+                    //await dfs.InitializeServiceAsync(device);                    
+                    DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
+                    DFUService.Instance.connectToDevice(device);
+
                 }
                 catch (Exception e)
                 {
@@ -350,8 +352,7 @@ namespace ConsoleApp2
         /// <returns></returns>
         public async Task MainTask(String logPath, bool scanonly, String bin_file, String dat_file, String device_address)
         {
-            MessageDialog showDialog = new MessageDialog("Hi Welcome to Windows 10");
-            showDialog.ShowAsync();
+            Console.WriteLine("LogPath:" + logPath);
             this.createLog(logPath);
             //this.log("MainTask", "");
             try
@@ -408,7 +409,8 @@ namespace ConsoleApp2
                         {
                             //DFUService dfs =DFUService.Instance;
                             //await dfs.InitializeServiceAsync(device);
-                            await DFUService.Instance.InitializeServiceAsync(device, this, bin_file, dat_file);
+                            DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
+                            await DFUService.Instance.connectToDevice(device);
                         }
                         catch (Exception e)
                         {

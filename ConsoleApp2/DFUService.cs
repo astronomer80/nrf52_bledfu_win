@@ -340,16 +340,24 @@ namespace OTADFUApplication
         /// <summary>
         /// Connect to the device, check if there's the DFU Service and start the firmware update
         /// </summary>
-        /// <param name="device">The device discovered</param>
         /// <param name="program">The main class (Could be removed)</param>
         /// <param name="bin_file">The binary or hex file to upload</param>
         /// <param name="dat_file">The descriptor file</param>
         /// <returns></returns>
-        public async Task InitializeServiceAsync(DeviceInformation device, Program program, String bin_file, String dat_file)
+        public void initializeServiceAsync(Program program, String bin_file, String dat_file)
         {
             this.mainProgram = program;
             this.bin_file = bin_file;
             this.dat_file = dat_file;
+        }
+
+        /// <summary>
+        /// Connect to the device, check if there's the DFU Service and start the firmware update
+        /// </summary>
+        /// <param name="device">The device discovered</param>
+        /// <returns></returns>
+        public async Task connectToDevice(DeviceInformation device) {
+
             try
             {
                 var deviceAddress = "N/A";
@@ -361,7 +369,7 @@ namespace OTADFUApplication
                 String[] param = new string[] { "System.Devices.ContainerId" };
                 DeviceInformationCollection devices = await DeviceInformation.FindAllAsync(service, param);
                 */
-                Console.WriteLine("Device match:" + deviceAddress);
+                Console.WriteLine("Connecting to:" + deviceAddress+ "...");
 
                 BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
                 Console.WriteLine("Name:" + bluetoothLeDevice.Name);                
@@ -387,17 +395,23 @@ namespace OTADFUApplication
                                 var characteristics = result_.Characteristics;
                                 foreach (var characteristic in characteristics)
                                 {
-                                    Console.WriteLine("UUID " + characteristic.AttributeHandle + "-");
-                                    Console.WriteLine("Handle " + characteristic.Uuid + "-");
-                                    if (characteristic.Uuid.ToString() == DFUService.DFUControlPoint) {
+                                    Console.WriteLine("UUID " + characteristic.Uuid + "-");
+                                    Console.WriteLine("Handle " + characteristic.AttributeHandle + "-");
+                                    if (characteristic.Uuid.ToString() == DFUService.DFUControlPoint)
+                                    {
                                         Console.WriteLine("DFU Control point found " + characteristic.UserDescription);
                                         controlPoint = characteristic;
-                                        //await startFirmwareUpdate();
-                                        UNUSED_startFirmwareUpdate__();
                                     }
+                                    else if (characteristic.Uuid.ToString() == DFUService.DFUPacket)
+                                        Console.WriteLine("Packet found " + characteristic.UserDescription);
+                                    //this.packet = characteristic;                                    
                                 }
+                                
+                                await startFirmwareUpdate(device);
+                                //UNUSED_startFirmwareUpdate__();
+                                //await StartFirmwareUpdate2_();                                        
                             }
-                            
+                            break;
                         }
                     }
                 }
@@ -417,7 +431,7 @@ namespace OTADFUApplication
         /// StartFirmwareUpdate
         /// </summary>
         /// <returns></returns>
-        private async Task startFirmwareUpdate()
+        private async Task startFirmwareUpdate(DeviceInformation device)
         {
             if (controlPoint.Uuid.ToString() != DFUService.DFUControlPoint) {
                 Console.WriteLine("ERROR: Control point not properly set");
@@ -425,30 +439,153 @@ namespace OTADFUApplication
             }
             try
             {
-                Console.WriteLine("Starting firmware update...");
-                controlPoint.ValueChanged += controlPoint_ValueChanged;
+                log("startFirmwareUpdate", "");                
                 if (await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
                 {
                     Console.WriteLine("ERROR: Device not connected succesfully. Please ensure that the board has a DFU BLE Service.");
                     return;
                 }
+                controlPoint.ValueChanged += controlPoint_ValueChanged;
                 //If the board is not in DFU mode is necessary to switch in bootloader mode
                 if (await checkDFUStatus() == 1)
+                {
+                    await switchOnBootLoader(controlPoint);
+                    await Task.Delay(2000);
+                    await connectToDevice(device);
+                }
+                else
+                {
+                    // In order to avoid unnecessary communication with the device, determine if the device is already 
+                    // correctly configured to send notifications.
+                    // By default ReadClientCharacteristicConfigurationDescriptorAsync will attempt to get the current
+                    // value from the system cache and communication with the device is not typically required.
+                    var currentDescriptorValue = await controlPoint.ReadClientCharacteristicConfigurationDescriptorAsync();
+
+                    if (currentDescriptorValue.Status == GattCommunicationStatus.Success)
+                    {
+                        log("Descriptor com success " + controlPoint.UserDescription, "");
+                    }
+                    else
+                        log("Descriptor com UNsuccess " + controlPoint.UserDescription, "");
+                    try
+                    {
+                        Console.WriteLine("Starting firmware update...");
+                        //# Send 'START DFU' + Application Command 0x04
+                        if (await this.switchOnBootLoader(controlPoint))
+                        {
+                            await this.switchOnBootLoader(controlPoint);
+                            await this.switchOnBootLoader(controlPoint);
+                            GattCommunicationStatus status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                            log("StaNot1 " + status, "");
+
+                            await Task.Delay(2000);
+                            var ret = await this.sendImageSize();
+                            log("ImageSizeCommand res: " + ret, "");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+            }
+            catch (Exception e) { Console.WriteLine(e.Message + " " + e.StackTrace); }
+        }
+
+        /// <summary>
+        /// Configure the Bluetooth device to send notifications whenever the Characteristic value changes
+        /// UNUSED
+        /// </summary>
+        private async Task StartFirmwareUpdate2_()
+        {
+            try
+            {
+                Console.WriteLine("Starting firmware update TEST VERSION...");
+                
+                // While encryption is not required by all devices, if encryption is supported by the device,
+                // it can be enabled by setting the ProtectionLevel property of the Characteristic object.
+                // All subsequent operations on the characteristic will work over an encrypted link.
+                //characteristic.ProtectionLevel = GattProtectionLevel.EncryptionRequired; //Not necessary
+
+                // Register the event handler for receiving notifications
+                controlPoint.ValueChanged += controlPoint_ValueChanged;
+                // controlPoint.add_ValueChanged(controlPoint_ValueChanged);
+
+                // In order to avoid unnecessary communication with the device, determine if the device is already 
+                // correctly configured to send notifications.
+                // By default ReadClientCharacteristicConfigurationDescriptorAsync will attempt to get the current
+                // value from the system cache and communication with the device is not typically required.
+                var currentDescriptorValue = await controlPoint.ReadClientCharacteristicConfigurationDescriptorAsync();
+
+                if (currentDescriptorValue.Status == GattCommunicationStatus.Success)
+                {
+                    log("Descriptor com success " + controlPoint.UserDescription, "");
+                }
+                else
+                    log("Descriptor com UNsuccess " + controlPoint.UserDescription, "");
+
+                //Test
+                //StartDeviceConnectionWatcher();
+
+                GattCommunicationStatus status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE);
+                if (status == GattCommunicationStatus.Unreachable)
+                {
+                    Console.WriteLine("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings.");
+                    return;
+                }
+
+                if ((currentDescriptorValue.Status != GattCommunicationStatus.Success) ||
+                    (currentDescriptorValue.ClientCharacteristicConfigurationDescriptor != CHARACTERISTIC_NOTIFICATION_TYPE))
+                {
+                    //Go here only when is a first time the device is used
+
+                    log("Success " + service.DeviceId, "");
+                    // Set the Client Characteristic Configuration Descriptor to enable the device to send notifications
+                    // when the Characteristic value changes                    
+                    status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE);
+                    if (status == GattCommunicationStatus.Unreachable)
+                    {
+                        // Register a PnpObjectWatcher to detect when a connection to the device is established,
+                        // such that the application can retry device configuration.
+                        //StartDeviceConnectionWatcher();
+                        log("Unreacheable", "DFUService");
+                    }
+                    else
+                    {
+                        log("GattCommunicationStatus Success", "DFUService");
+                        int dfuVersion = await checkDFUStatus();
+                        if (dfuVersion == 1)
+                            await switchOnBootLoader(controlPoint);
+
+                        if (status == GattCommunicationStatus.Success)
+                            await switchOnBootLoader(controlPoint);
+                    }
+                }
+                else
+                {
+                    //TODO. Find a way to remove e re-pair the device automatically
+                    //rootPage.NotifyUser("ERROR: Device not connected succesfully. Try to remove the device from the windows bluetooth settings.", NotifyType.ErrorMessage);
+                }
+                //TODO: Correct this part
+                int dfuVersion_ = await checkDFUStatus();
+                if (dfuVersion_ == 1)
                     await this.switchOnBootLoader(controlPoint);
+
+                //dfuVersion_ = await checkDFUStatus();
                 try
                 {
-                    //# Send 'START DFU' + Application Command 0x01
                     if (await this.switchOnBootLoader(controlPoint))
-                    {
                         await this.sendImageSize();
-                    }
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                 }
             }
-            catch (Exception e) { Console.WriteLine(e.Message + " " + e.StackTrace); }
+            catch (Exception e)
+            {
+                Console.WriteLine("ERROR: Accessing1 your device failed." + Environment.NewLine + e.Message);
+            }
         }
 
         /// <summary>
@@ -464,6 +601,7 @@ namespace OTADFUApplication
             }
             try
             {
+                Console.WriteLine("Starting firmware update...");
                 // Obtain the characteristic for which notifications are to be received
                 //controlPoint = service.GetCharacteristicsForUuidAsync(new Guid(DFUControlPoint))[CHARACTERISTIC_INDEX];
                 //controlPoint = service.GetCharacteristics(new Guid(DFUService.DFUControlPoint))[CHARACTERISTIC_INDEX];
@@ -795,8 +933,9 @@ namespace OTADFUApplication
         /// <returns></returns>
         private async Task<bool> sendImageSize()
         {
+            log("Sending image size", "sendImageSize");
             try
-            {   
+            {
                 var folder = await StorageFolder.GetFolderFromPathAsync(Path.GetDirectoryName(this.bin_file));
                 StorageFile img = await folder.GetFileAsync(Path.GetFileName(this.bin_file));
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
@@ -805,9 +944,24 @@ namespace OTADFUApplication
 
                 IBuffer buffer = ImageSizeCommand(GetSizeOfImage());
 
-                GattCommunicationStatus status = await packet.WriteValueAsync(buffer, GattWriteOption.WriteWithoutResponse);
+                GattCommunicationStatus status = await packet.WriteValueAsync(buffer);
                 if (status == GattCommunicationStatus.Success)
                     return true;
+
+                //var writer = new DataWriter();
+                //// WriteByte used for simplicity. Other commmon functions - WriteInt16 and WriteSingle
+                //IBuffer buffer = ImageSizeCommand(GetSizeOfImage());
+                //GattCommunicationStatus status = await this.packet.WriteValueAsync(buffer);
+                //if (status == GattCommunicationStatus.Success)
+                //{
+                //    return true;
+                //}
+
+                //packet = service.GetCharacteristics(new Guid(DFUService.DFUPacket)).FirstOrDefault();
+                //IBuffer buffer = ImageSizeCommand(GetSizeOfImage());
+                //GattCommunicationStatus status = await packet.WriteValueAsync(buffer);
+                //if (status == GattCommunicationStatus.Success)
+                //    return true;
             }
             catch (Exception e)
             {
