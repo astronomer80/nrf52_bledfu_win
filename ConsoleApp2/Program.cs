@@ -61,7 +61,7 @@ namespace ConsoleApp2
             else if (args[0] == "scan")
             {
                 program.MainTask(@".\logs\", true, "", "", "");
-                program.discovery_draft();
+                program.discovery();
 
             }
             //Update procedure
@@ -97,7 +97,9 @@ namespace ConsoleApp2
                         //nrfutil dfu genpkg app_package.zip--application application.hex
                         try
                         {
-                            string nrfutilexefilename = @"nrfutil.exe";
+                   
+                            string appfolder= System.IO.Directory.GetParent(System.Reflection.Assembly.GetEntryAssembly().Location).ToString();
+                            string nrfutilexefilename = appfolder + @"./nrfutil.exe";
                             if (!File.Exists(nrfutilexefilename))
                                 Console.WriteLine("nrfutil.exe not found. It should be in the same directory of this executable");
                             else
@@ -144,7 +146,10 @@ namespace ConsoleApp2
             Console.ReadLine();
         }
 
-        private void discovery_draft()
+        /// <summary>
+        /// Discovery BLE devices in range
+        /// </summary>
+        private void discovery()
         {
             Console.WriteLine("Discovering devices...");
             // Query for extra properties you want returned
@@ -361,7 +366,7 @@ namespace ConsoleApp2
                 this.bin_file = bin_file;
                 this.dat_file = dat_file;
                 this.given_device_address = device_address;
-                this.discovery_draft();
+                this.discovery();
                 //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)

@@ -49,6 +49,7 @@ namespace OTADFUApplication
         private GattCharacteristic controlPoint { get; set; }
         private GattCharacteristic packet { get; set; }
         private GattCharacteristic dFUVersion { get; set; }
+        private GattDescriptor cccd { get; set; }
         private bool IsServiceChanged = false;
         public bool IsServiceInitialized { get; set; }
         //The byte array of the file provided to upload
@@ -71,8 +72,9 @@ namespace OTADFUApplication
         public static String DFUPacket = "00001532-1212-efde-1523-785feabcd123";
         //UUID to check the DFU version: buttonless or not.
         public static String DFUVersion = "00001534-1212-efde-1523-785feabcd123";
+        public static String CCCD = "00002902-0000-1000-8000-00805f9b34fb";
         #endregion
-        
+
         private CoreDispatcher dispatcher { get; set; }
 
         // Make sure to check your device's documentation to find out how many characteristics your specific device has.
@@ -349,6 +351,9 @@ namespace OTADFUApplication
             this.mainProgram = program;
             this.bin_file = bin_file;
             this.dat_file = dat_file;
+
+            //TODO Nedd to add the possibility to choice the file type
+            this.firmwareType = FirmwareTypeEnum.Application;
         }
 
         /// <summary>
@@ -382,7 +387,7 @@ namespace OTADFUApplication
                     //Scan the available services
                     var services = result.Services;
                     foreach(var service_ in services) {
-                        Console.WriteLine("UUID "+service_.Uuid);
+                        Console.WriteLine("Service "+service_.Uuid);
                         //If DFUService found...
                         if (service_.Uuid == new Guid(DFUService.DFUService_UUID)) { //NRF52 DFU Service
                             Console.WriteLine("DFU Service found");
@@ -395,7 +400,7 @@ namespace OTADFUApplication
                                 var characteristics = result_.Characteristics;
                                 foreach (var characteristic in characteristics)
                                 {
-                                    Console.WriteLine("UUID " + characteristic.Uuid + "-");
+                                    Console.WriteLine("Char " + characteristic.Uuid + "-");
                                     Console.WriteLine("Handle " + characteristic.AttributeHandle + "-");
                                     if (characteristic.Uuid.ToString() == DFUService.DFUControlPoint)
                                     {
@@ -403,10 +408,26 @@ namespace OTADFUApplication
                                         controlPoint = characteristic;
                                     }
                                     else if (characteristic.Uuid.ToString() == DFUService.DFUPacket)
+                                    {
                                         Console.WriteLine("Packet found " + characteristic.UserDescription);
-                                    //this.packet = characteristic;                                    
+                                        this.packet = characteristic;  
+                                    }
+
+
+                                    GattDescriptorsResult result2_ = await characteristic.GetDescriptorsAsync();
+                                    var descriptors = result2_.Descriptors;
+                                    foreach (var descriptor in descriptors)
+                                    {
+                                        Console.WriteLine("Descr " + descriptor.Uuid + "-");
+                                        Console.WriteLine("Handle " + descriptor.AttributeHandle + "-");
+                                        if (descriptor.Uuid.ToString() == DFUService.CCCD)
+                                            this.cccd = descriptor;
+
+                                    }
+
+
                                 }
-                                
+
                                 await startFirmwareUpdate(device);
                                 //UNUSED_startFirmwareUpdate__();
                                 //await StartFirmwareUpdate2_();                                        
@@ -449,8 +470,9 @@ namespace OTADFUApplication
                 //If the board is not in DFU mode is necessary to switch in bootloader mode
                 if (await checkDFUStatus() == 1)
                 {
+                    await Task.Delay(1000);
                     await switchOnBootLoader(controlPoint);
-                    await Task.Delay(2000);
+                    await Task.Delay(1000);
                     await connectToDevice(device);
                 }
                 else
@@ -459,6 +481,7 @@ namespace OTADFUApplication
                     // correctly configured to send notifications.
                     // By default ReadClientCharacteristicConfigurationDescriptorAsync will attempt to get the current
                     // value from the system cache and communication with the device is not typically required.
+                    await Task.Delay(1000);
                     var currentDescriptorValue = await controlPoint.ReadClientCharacteristicConfigurationDescriptorAsync();
 
                     if (currentDescriptorValue.Status == GattCommunicationStatus.Success)
@@ -469,16 +492,29 @@ namespace OTADFUApplication
                         log("Descriptor com UNsuccess " + controlPoint.UserDescription, "");
                     try
                     {
+                        await Task.Delay(1000);
                         Console.WriteLine("Starting firmware update...");
                         //# Send 'START DFU' + Application Command 0x04
                         if (await this.switchOnBootLoader(controlPoint))
                         {
-                            await this.switchOnBootLoader(controlPoint);
-                            await this.switchOnBootLoader(controlPoint);
+                            await Task.Delay(1000);
+                            //await this.switchOnBootLoader(controlPoint);
+                            //await this.switchOnBootLoader(controlPoint);
                             GattCommunicationStatus status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                            log("StaNot1 " + status, "");
+                            log("CCCD1 ", "");
 
-                            await Task.Delay(2000);
+                            //cccd = controlPoint.GetDescriptors(new Guid(DFUService.DFUPacket)).FirstOrDefault();
+                            log("CCCD2 ", "");
+
+                            var buffer = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_StartDfu, 0x00);
+                            log("CCCD3 ", "");
+
+                            var result = cccd.WriteValueAsync(buffer);
+                            log("Res " + result.Status, "");
+                            log("Res " + result.Completed, "");
+                            log("Res " + result.Id, "");
+                            
+                            await Task.Delay(1000);
                             var ret = await this.sendImageSize();
                             log("ImageSizeCommand res: " + ret, "");
                         }
@@ -873,9 +909,7 @@ namespace OTADFUApplication
             //<Length of SoftDevice><Length of Bootloader><Length of Application> 
             var sizes = new int[] { 0, 0, 0 };
             sizes[2] = firmwareImage.Length; //Only the application
-
-            //TODO Restore softdevice and bootloader update
-            /*
+                        
             switch (firmwareType)
             {
                 case FirmwareTypeEnum.SoftDevice:
@@ -895,7 +929,7 @@ namespace OTADFUApplication
                     break;
                 default:
                     throw new ArgumentException();
-            }*/
+            }
 
             return sizes;
         }
@@ -940,9 +974,15 @@ namespace OTADFUApplication
                 StorageFile img = await folder.GetFileAsync(Path.GetFileName(this.bin_file));
                 IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
                 this.firmwareImage = firmwareImage_buffer.ToArray();
-                packet = service.GetCharacteristics(new Guid(DFUService.DFUPacket)).FirstOrDefault();
+                //packet = service.GetCharacteristics(new Guid(DFUService.DFUPacket)).FirstOrDefault();
+                log("P:" + packet.AttributeHandle, "");
+                log("P:" + packet.CharacteristicProperties, "");
+                log("P:" + packet.UserDescription, "");
+                log("P:" + packet.Uuid, "");
 
-                IBuffer buffer = ImageSizeCommand(GetSizeOfImage());
+                var imageSize = GetSizeOfImage();
+                //log("imageSize:" + imageSize[2],"");
+                IBuffer buffer = ImageSizeCommand(imageSize);
 
                 GattCommunicationStatus status = await packet.WriteValueAsync(buffer);
                 if (status == GattCommunicationStatus.Success)

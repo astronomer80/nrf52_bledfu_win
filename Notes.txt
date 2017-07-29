@@ -8,3 +8,14 @@ System.Runtime.InteropServices
 update -h E:\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a d4:8c:09:b0:33:bf
 update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a ec:31:b4:5d:a4:5c
 
+C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\ConsoleApp2\bin\scan\OTADfu_Console2.exe update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a ec:31:b4:5d:a4:5b
+
+C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\ConsoleApp2\bin\scan\OTADfu_Console2.exe update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_500_hex\app_blink_dfu_500.bin -a ec:31:b4:5d:a4:5b
+
+C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_1000_2
+
+
+C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\ConsoleApp2\bin\scan\OTADfu_Console2.exe update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_1000_2\Blink.ino-merged.hex -a ec:31:b4:5d:a4:5b
+
+
+C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\ConsoleApp2\bin\scan\OTADfu_Console2.exe update -h C:\Users\aferr\Source\Repos\nrf52_bledfu_win2\app_blink_dfu_1000_2\Blink.ino-merged.hex -a d4:8c:09:b0:33:be
