@@ -1,1 +1,1 @@
-c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\nrf52_bledfu_win_app.csproj;x86
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\nrf52_bledfu_win_app.csproj;x86

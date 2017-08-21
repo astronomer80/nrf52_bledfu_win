@@ -38,12 +38,11 @@ namespace nrf52_bledfu_win_app
         String version = "0.1";
         String app_name = "Arduino OTA_DFU for Nordic nRF5x";
         bool scanonly, devicefound;
-        //String given_device_address = "cc:32:24:e9:13:1a";
-        String given_device_address = "e8:53:c7:3c:fc:e8";
+        String given_device_address = "cc:32:24:e9:13:1a";
+        //String given_device_address = "e8:53:c7:3c:fc:e8";
         private static GattDeviceService service { get; set; }
-        public String path = @"C:\Users\aferr\Documents\Primo";
         public static Boolean verboseMode = true;
-        StorageFile bin_file, dat_file;
+        StorageFile bin_file =null, dat_file=null;
         String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
         public MainPage()
@@ -51,7 +50,9 @@ namespace nrf52_bledfu_win_app
             this.InitializeComponent();
             time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             logfilename = "[" + time + "]_" + app_name + "_LOG.txt";
-            this.scanonly = true;
+            this.scanonly = false;
+            if (this.scanonly == true)
+                this.log("Scan mode Only", "");
             this.init();
         }
 
@@ -65,10 +66,11 @@ namespace nrf52_bledfu_win_app
             //this.log("MainTask", "");
             try
             {
-                this.scanonly = true;
-                this.getFiles();
+                this.log(this.app_name, "");
+                await this.getFiles();
                 
-                //this.discovery();
+                if(this.bin_file!=null && this.dat_file!=null) 
+                    this.discovery();
                 //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)
@@ -89,23 +91,16 @@ namespace nrf52_bledfu_win_app
                 openPicker.FileTypeFilter.Add(".dat");
                 openPicker.FileTypeFilter.Add(".zip");
                 openPicker.FileTypeFilter.Add(".hex");
-
-
-
+                
                 var filelist = await openPicker.PickMultipleFilesAsync();
                 foreach (var file in filelist)
                 {
                     log(file.Name, "");
-                    log(file.Path, "");
+                    if (file.Name.EndsWith(".bin"))
+                        this.bin_file = file;
 
-                    
-                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-
-                  IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(file);
-                    var test = firmwareImage_buffer.ToArray();
-                    Debug.WriteLine(test);
-
-
+                    if (file.Name.EndsWith(".dat"))
+                        this.dat_file = file;
                 }
             }
             catch (Exception e)
@@ -184,7 +179,7 @@ namespace nrf52_bledfu_win_app
 
             DeviceWatcher deviceWatcher =
                         DeviceInformation.CreateWatcher(
-                                BluetoothLEDevice.GetDeviceSelectorFromPairingState(false),
+                                BluetoothLEDevice.GetDeviceSelectorFromPairingState(true),
                                 requestedProperties,
                                 DeviceInformationKind.AssociationEndpoint);
 
@@ -200,12 +195,32 @@ namespace nrf52_bledfu_win_app
 
             // Start the watcher.
             deviceWatcher.Start();
+            /*
+            // Query for extra properties you want returned
+            DeviceWatcher deviceWatcher2 =
+                        DeviceInformation.CreateWatcher(
+                                BluetoothLEDevice.GetDeviceSelectorFromPairingState(false),
+                                requestedProperties,
+                                DeviceInformationKind.AssociationEndpoint);
+
+            // Register event handlers before starting the watcher.
+            // Added, Updated and Removed are required to get all nearby devices
+            deviceWatcher2.Added += DeviceWatcher_Added;
+            deviceWatcher2.Updated += DeviceWatcher_Updated;
+            deviceWatcher2.Removed += DeviceWatcher_Removed;
+
+            // EnumerationCompleted and Stopped are optional to implement.
+            deviceWatcher2.EnumerationCompleted += DeviceWatcher_EnumerationCompleted;
+            deviceWatcher2.Stopped += DeviceWatcher_Stopped;
+
+            // Start the watcher.
+            deviceWatcher2.Start();*/
 
         }
 
         private void DeviceWatcher_Stopped(DeviceWatcher sender, object args)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void DeviceWatcher_EnumerationCompleted(DeviceWatcher sender, object args)
@@ -223,7 +238,7 @@ namespace nrf52_bledfu_win_app
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         /// <summary>

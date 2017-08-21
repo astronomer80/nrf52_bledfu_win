@@ -209,3 +209,4 @@ c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_
 c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\obj\x86\Debug\qualifiers.txt.intermediate
 c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\obj\x86\Debug\MultipleQualifiersPerDimensionFound.txt
 c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\obj\x86\Debug\ProjectArchitectures.txt
+C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\obj\x86\Debug\nrf52_bledfu_win_app.csprojResolveAssemblyReference.cache

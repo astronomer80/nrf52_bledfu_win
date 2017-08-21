@@ -10,7 +10,7 @@
     <PackageArchitecture>x86</PackageArchitecture>
     <PackageIdentityName>a2b71e53-6ce1-4142-83e6-931eb650a5c1</PackageIdentityName>
     <PackageIdentityPublisher>CN=aferr</PackageIdentityPublisher>
-    <IntermediateOutputPath>c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\obj\x86\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\obj\x86\Debug\</IntermediateOutputPath>
     <RemoteDeploymentType>
     </RemoteDeploymentType>
     <PackageRegistrationPath>
@@ -18,7 +18,7 @@
     <RemoveNonLayoutFiles>true</RemoveNonLayoutFiles>
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
-    <LayoutDir>c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\AppX</LayoutDir>
+    <LayoutDir>C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\AppX</LayoutDir>
     <RegisteredManifestChecksum>A5AD2BAF20AFD470BA1758CDD144DE8E67FA82F4804E282B85CDD877E044AECF</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>a2b71e53-6ce1-4142-83e6-931eb650a5c1_1.0.0.0_x86__85xdab56x2804</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>a2b71e53-6ce1-4142-83e6-931eb650a5c1_85xdab56x2804!App</RegisteredUserModeAppID>
@@ -28,16 +28,16 @@
     <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\Core\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-21T13:26:01.748</Modified>
+      <Modified>2017-08-21T15:34:04.361</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\nrf52_bledfu_win_app.exe">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\nrf52_bledfu_win_app.exe">
       <PackagePath>entrypoint\nrf52_bledfu_win_app.exe</PackagePath>
-      <Modified>2017-08-21T13:25:59.097</Modified>
+      <Modified>2017-08-21T15:34:04.034</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\aferr\.nuget\packages\Microsoft.CSharp\4.0.1\lib\netcore50\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>
@@ -495,45 +495,45 @@
       <PackagePath>System.Xml.XmlSerializer.dll</PackagePath>
       <Modified>2016-06-11T21:15:04.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Properties\Default.rd.xml">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Properties\Default.rd.xml">
       <PackagePath>Properties\Default.rd.xml</PackagePath>
       <Modified>2017-08-21T07:25:50.385</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\LockScreenLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
       <Modified>2017-07-13T11:38:36.582</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-07-13T11:38:36.582</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-07-13T11:38:36.582</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-07-13T11:38:36.582</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-07-13T11:38:36.582</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-07-13T11:38:36.582</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2017-07-13T11:38:36.582</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\nrf52_bledfu_win_app.xr.xml">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\nrf52_bledfu_win_app.xr.xml">
       <PackagePath>nrf52_bledfu_win_app.xr.xml</PackagePath>
       <Modified>2017-08-21T08:38:44.531</Modified>
     </AppxPackagedFile>
@@ -541,14 +541,14 @@
       <PackagePath>WinMetadata\Windows.winmd</PackagePath>
       <Modified>2017-07-13T11:45:18.903</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\resources.pri">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-21T13:26:01.449</Modified>
+      <Modified>2017-08-21T14:21:10.759</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="c:\users\aferr\documents\visual studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\Core\nrf52_bledfu_win_app.exe">
+    <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\Core\nrf52_bledfu_win_app.exe">
       <PackagePath>nrf52_bledfu_win_app.exe</PackagePath>
-      <Modified>2017-08-21T13:26:01.743</Modified>
+      <Modified>2017-08-21T15:34:04.357</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

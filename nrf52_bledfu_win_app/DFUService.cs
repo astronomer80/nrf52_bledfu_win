@@ -332,7 +332,7 @@ namespace OTADFUApplication
             this.bin_file = bin_file;
             this.dat_file = dat_file;
 
-            //TODO Nedd to add the possibility to choice the file type
+            //TODO Need to add the possibility to choice the file type
             this.firmwareType = FirmwareTypeEnum.Application;
         }
 
@@ -359,7 +359,7 @@ namespace OTADFUApplication
 
                 BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
                 Debug.WriteLine("Name:" + bluetoothLeDevice.Name);
-
+                int characteristicsControl = 0;
                 //Perform the connection to the device
                 GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync();
                 if (result.Status == GattCommunicationStatus.Success)
@@ -388,12 +388,14 @@ namespace OTADFUApplication
                                     if (characteristic.Uuid.ToString() == DFUService.DFUControlPoint)
                                     {
                                         Debug.WriteLine("DFU Control point found " + characteristic.UserDescription);
-                                        controlPoint = characteristic;
+                                        this.controlPoint = characteristic;
+                                        characteristicsControl++;
                                     }
                                     else if (characteristic.Uuid.ToString() == DFUService.DFUPacket)
                                     {
                                         Debug.WriteLine("Packet found " + characteristic.UserDescription);
                                         this.packet = characteristic;
+                                        characteristicsControl++;
                                     }
 
 
@@ -410,8 +412,11 @@ namespace OTADFUApplication
 
 
                                 }
-
-                                await startFirmwareUpdate(device);
+                                if (characteristicsControl == 2)
+                                    await startFirmwareUpdate(device);
+                                else {
+                                    log("Controlpoint or packet not found", "");
+                                }
                                 //UNUSED_startFirmwareUpdate__();
                                 //await StartFirmwareUpdate2_();                                        
                             }
@@ -437,7 +442,7 @@ namespace OTADFUApplication
         /// <returns></returns>
         private async Task startFirmwareUpdate(DeviceInformation device)
         {
-            if (controlPoint.Uuid.ToString() != DFUService.DFUControlPoint)
+            if (this.controlPoint.Uuid.ToString() != DFUService.DFUControlPoint)
             {
                 Debug.WriteLine("ERROR: Control point not properly set");
                 return;
@@ -445,9 +450,16 @@ namespace OTADFUApplication
             try
             {
                 log("startFirmwareUpdate", "");
-                if (await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
-                {
-                    Debug.WriteLine("ERROR: Device not connected succesfully. Please ensure that the board has a DFU BLE Service.");
+                if (this.controlPoint.CharacteristicProperties.HasFlag(GattCharacteristicProperties.Notify))
+                {/*
+                    if (await this.controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(CHARACTERISTIC_NOTIFICATION_TYPE) == GattCommunicationStatus.Unreachable)
+                    {
+                        Debug.WriteLine("ERROR: Device not connected succesfully. Please ensure that the board has a DFU BLE Service.");
+                        return;
+                    }*/
+                }
+                else {
+                    log("ERROR: Notification unable", "startFirmwareUpdate");
                     return;
                 }
                 controlPoint.ValueChanged += controlPoint_ValueChanged;
@@ -457,6 +469,7 @@ namespace OTADFUApplication
                     await Task.Delay(1000);
                     await switchOnBootLoader(controlPoint);
                     await Task.Delay(1000);
+                    this.controlPoint = null;
                     await connectToDevice(device);
                 }
                 else
@@ -509,7 +522,9 @@ namespace OTADFUApplication
                     }
                 }
             }
-            catch (Exception e) { Debug.WriteLine(e.Message + " " + e.StackTrace); }
+            catch (Exception e) {
+                log(e.Message + " " + e.StackTrace, "[startFirmwareUpdate]");
+                Debug.WriteLine(e.Message + " " + e.StackTrace); }
         }
 
         /// <summary>
@@ -1084,7 +1099,7 @@ namespace OTADFUApplication
                     var InitialPacketStart = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialzeDFUParameter, DeviceFirmwareUpdateControlPointCharacteristics.OpCode_InitialPacketReceive);
                     await controlPoint.WriteValueAsync(InitialPacketStart);
                     //Transmit the Init image (DAT).
-                    var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
+                    //var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
                     //StorageFile dat = await folder.GetFileAsync("s132_pca10040.dat");
                     IBuffer initialPacket = await FileIO.ReadBufferAsync(this.dat_file);
                     await packet.WriteValueAsync(initialPacket, GattWriteOption.WriteWithoutResponse);
