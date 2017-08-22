@@ -68,9 +68,11 @@ namespace nrf52_bledfu_win_app
             {
                 this.log(this.app_name, "");
                 await this.getFiles();
-                
-                if(this.bin_file!=null && this.dat_file!=null) 
+
+                if (this.bin_file != null && this.dat_file != null)
                     this.discovery();
+                else
+                    log("Both bin and dat file not found", "");
                 //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)
@@ -195,7 +197,7 @@ namespace nrf52_bledfu_win_app
 
             // Start the watcher.
             deviceWatcher.Start();
-            /*
+            
             // Query for extra properties you want returned
             DeviceWatcher deviceWatcher2 =
                         DeviceInformation.CreateWatcher(
@@ -214,7 +216,7 @@ namespace nrf52_bledfu_win_app
             deviceWatcher2.Stopped += DeviceWatcher_Stopped;
 
             // Start the watcher.
-            deviceWatcher2.Start();*/
+            deviceWatcher2.Start();
 
         }
 
@@ -252,9 +254,9 @@ namespace nrf52_bledfu_win_app
             String deviceAddress = device.Id.Split('-')[1];
 
             Debug.WriteLine("Found Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
-            Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
+            //Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
             //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
-            String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
+            //String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
             String[] param = new string[] { "System.Devices.ContainerId" };
 
             //foreach (var prop in device.Properties) {
@@ -272,6 +274,7 @@ namespace nrf52_bledfu_win_app
                     //DFUService dfs =DFUService.Instance;
                     //await dfs.InitializeServiceAsync(device);                    
                     DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
+                    
                     DFUService.Instance.connectToDevice(device);
 
                 }
