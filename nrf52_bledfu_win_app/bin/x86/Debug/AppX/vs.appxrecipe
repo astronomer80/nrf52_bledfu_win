@@ -31,13 +31,13 @@
     <AppXManifest Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-22T14:38:32.164</Modified>
+      <Modified>2017-08-24T15:32:29.564</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\nrf52_bledfu_win_app.exe">
       <PackagePath>entrypoint\nrf52_bledfu_win_app.exe</PackagePath>
-      <Modified>2017-08-22T14:38:31.799</Modified>
+      <Modified>2017-08-24T15:32:29.169</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\aferr\.nuget\packages\Microsoft.CSharp\4.0.1\lib\netcore50\Microsoft.CSharp.dll">
       <PackagePath>Microsoft.CSharp.dll</PackagePath>
@@ -535,7 +535,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\nrf52_bledfu_win_app.xr.xml">
       <PackagePath>nrf52_bledfu_win_app.xr.xml</PackagePath>
-      <Modified>2017-08-21T08:38:44.531</Modified>
+      <Modified>2017-08-24T15:26:57.291</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Windows Kits\10\UnionMetadata\10.0.15063.0\Windows.winmd">
       <PackagePath>WinMetadata\Windows.winmd</PackagePath>
@@ -544,11 +544,11 @@
     <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2017-08-22T07:55:57.548</Modified>
+      <Modified>2017-08-24T15:31:44.883</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\aferr\Documents\Visual Studio 2017\Projects\nrf52_bledfu_win_app\nrf52_bledfu_win_app\bin\x86\Debug\Core\nrf52_bledfu_win_app.exe">
       <PackagePath>nrf52_bledfu_win_app.exe</PackagePath>
-      <Modified>2017-08-22T14:38:32.153</Modified>
+      <Modified>2017-08-24T15:32:29.555</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

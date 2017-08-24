@@ -5,13 +5,11 @@ using Windows.Storage.Streams;
 
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
-using Windows.Devices.Enumeration.Pnp;
 using Windows.UI.Core;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Storage;
 using Common.Service.GattService;
 using Common.Utility;
-using Windows.Foundation;
 using System.Diagnostics;
 using nrf52_bledfu_win_app;
 using Windows.Devices.Bluetooth;
@@ -85,8 +83,6 @@ namespace OTADFUApplication
 
         private static DFUService instance = new DFUService();
 
-        private PnpObjectWatcher watcher;
-        private String deviceContainerId;
 
         DeviceFirmwareUpdateControlPointCharacteristics deviceFirmwareUpdateControlPointCharacteristics = new DeviceFirmwareUpdateControlPointCharacteristics();
 
@@ -105,26 +101,29 @@ namespace OTADFUApplication
         #region Events
         public delegate void ServiceChangedIndication(GattCharacteristic sender, GattValueChangedEventArgs args);
         public event ServiceChangedIndication ServiceChanged;
+        //public delegate void ContolPointValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args);
+        //public event ContolPointValueChanged ValueChanged;
         public delegate void DeviceFirmwareUpdateCompleteIndication(bool IsComplete);
         public event DeviceFirmwareUpdateCompleteIndication DeviceFirmwareUpdateComplete;
         public delegate void ComfirmPacketReceiptIndication(int sizeOfBytesSent, int totalFirmwareLength, string messageType, string messageData);
         public event ComfirmPacketReceiptIndication PacketReceiptConfirmed;
         public event ValueChangeCompletedHandler ValueChangeCompleted;
         public delegate void ValueChangeCompletedHandler(string[] controlPointReturnedValue);
-        public event DeviceConnectionUpdatedHandler DeviceConnectionUpdated;
-        public delegate void DeviceConnectionUpdatedHandler(bool isConnected);
+        //public event DeviceConnectionUpdatedHandler DeviceConnectionUpdated;
+        //public delegate void DeviceConnectionUpdatedHandler(bool isConnected);
         #endregion
 
-
+        
         private string _OTHER_RESPONSE_CODE = "ResponseCode";
         private string _OTHER_OP_CODE = "OpCode";
-        private bool dfuInitialized = false;
         private MainPage mainProgram;
         //Given bin file
         private StorageFile bin_file;
         //Given dat file
         private StorageFile dat_file;
 
+        BluetoothLEDevice bluetoothLeDevice;
+        bool verboseMode = false;
 
         public static DFUService Instance
         {
@@ -138,60 +137,13 @@ namespace OTADFUApplication
 
         private DFUService()
         {
-            //App.Current.Suspending += App_Suspending;
-            //App.Current.Resuming += App_Resuming;
-            
+            App.Current.Suspending += App_Suspending;
+            App.Current.Resuming += App_Resuming;
+            //dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
+
             //StartDeviceConnectionWatcher();
         }
-
-        internal async void LoadDFUSettings()
-        {
-            /*
-            dfuSettingViewModel = SettingPivotViewModel.GetInstance().GetDeviceFirmwareUpdateSettingPageViewModel();
-            this.SelectedDeviceFirmwareTypeName = dfuSettingViewModel.SelectedDeviceFirmwareTypeName == null ? "Image type:" : dfuSettingViewModel.SelectedDeviceFirmwareTypeName;
-            foreach (var token in dfuSettingViewModel.FileToken.Values)
-            {
-                if (StorageApplicationPermissions.FutureAccessList.ContainsItem(token))
-                {
-                    var file = await StorageApplicationPermissions.FutureAccessList.GetFileAsync(token);
-                    this.ChosenFiles.Add(file);
-                }
-            }
-            this.ImageFileNames = dfuSettingViewModel.GetShortFileName();
-            */
-
-            //if (!IsImagesReadyToSend())
-            if (false)
-            {
-                await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.FILES_NOT_CHOSEN);
-            }
-            else
-            {
-                await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.READY);
-            }
-        }
-
-        async void deviceFirmwareUpdateService_PacketReceiptConfirmed(int sizeOfBytesSent, int totalFirmwareLength, string messageType, string messageData)
-        {
-            log("deviceFirmwareUpdateService_PacketReceiptConfirmed", "Status");
-            if (messageType != string.Empty)
-            {
-                await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.DFU_ERROR, 0, messageType, messageData);
-                return;
-            }
-            await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.SENDING, percentSent: 100);
-        }
-
-        async void deviceFirmwareUpdateService_DeviceFirmwareUpdateComplete(bool IsComplete)
-        {
-            log("deviceFirmwareUpdateService_DeviceFirmwareUpdateComplete:" + IsComplete, "Status");
-
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-            {
-            });
-            //await UpdatePogressBar(100);
-            await UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum.SENDING_COMPLETE);
-        }
+        
         
         private string FILES_NOT_CHOSEN = "File not present";
         private string DEVICE_NOT_CONNECTED = "Please connect your device";
@@ -238,47 +190,7 @@ namespace OTADFUApplication
                 }
             }
         }
-
-
-
-        public async Task<bool> UpdateDFUStatus(DeviceFirmwareUpdateStatusEnum status, int percentSent = 0, string errorType = "none", string errorCode = "none")
-        {
-            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                switch (status)
-                {
-                    case DeviceFirmwareUpdateStatusEnum.FILES_NOT_CHOSEN:
-                        this.Status = FILES_NOT_CHOSEN;
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.DEVICE_NOT_CONNECTED:
-                        this.Status = DEVICE_NOT_CONNECTED;
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.SERVICES_NOT_AVAILABLE:
-                        this.Status = SERVICES_NOT_AVAILABLE;
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.READY:
-                        this.Status = READY;
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.START_DFU:
-                        this.Status = START_DFU;
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.SENDING:
-                        //SendingPackStatus(SENDING, percentSent);
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.SENDING_COMPLETE:
-                        this.Status = SENDING_COMPLETE;
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.DFU_TIMEOUT:
-                        this.Status = DFU_TIMEOUT;
-                        break;
-                    case DeviceFirmwareUpdateStatusEnum.DFU_ERROR:
-                        log("SendingErrors(DFU_ERROR, errorType, errorCode);", "DFUService");
-                        break;
-                }
-            });
-            return true;
-        }
-
+        
         private void App_Resuming(object sender, object e)
         {
             // Since the Windows Runtime will close resources to the device when the app is suspended,
@@ -311,12 +223,6 @@ namespace OTADFUApplication
             {
                 controlPoint = null;
             }
-
-            if (watcher != null)
-            {
-                watcher.Stop();
-                watcher = null;
-            }
         }
 
         /// <summary>
@@ -336,6 +242,14 @@ namespace OTADFUApplication
             this.firmwareType = FirmwareTypeEnum.Application;
         }
 
+        private String parseDeviceAddress(String deviceID) {
+            var deviceAddress = "N/A";
+            if (deviceID.Contains("-"))
+                deviceAddress = deviceID.Split('-')[1];
+            return deviceAddress;
+
+        }
+
         /// <summary>
         /// Connect to the device, check if there's the DFU Service and start the firmware update
         /// </summary>
@@ -343,108 +257,138 @@ namespace OTADFUApplication
         /// <returns></returns>
         public async Task connectToDevice(DeviceInformation device)
         {
-
             try
-            {
-                var deviceAddress = "N/A";
-                if (device.Id.Contains("-"))
-                    deviceAddress = device.Id.Split('-')[1];
-                log("Connecting to:" + deviceAddress + "...", "");
+            {                
+                log("Connecting to:" + parseDeviceAddress(device.Id) + "...", "");
                 //Perform the connection to the device
-                BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
+                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
                 bluetoothLeDevice.ConnectionStatusChanged += ConnectionStatusChanged;
-                Debug.WriteLine("Name:" + bluetoothLeDevice.Name);
-                int characteristicsControl = 0;
-                GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync();
-                if (result.Status == GattCommunicationStatus.Success)
-                {
-                    Debug.WriteLine("Device " + deviceAddress + " connected. Updating firmware...");
-                    //Scan the available services
-                    var services = result.Services;
-                    foreach (var service_ in services)
-                    {
-                        Debug.WriteLine("Service " + service_.Uuid);
-                        //If DFUService found...
-                        if (service_.Uuid == new Guid(DFUService.DFUService_UUID))
-                        { //NRF52 DFU Service
-                            Debug.WriteLine("DFU Service found");
-                            IsServiceInitialized = true;
-                            service = service_;
-                            //Scan the available characteristics
-                            GattCharacteristicsResult result_ = await service.GetCharacteristicsAsync();
-                            if (result_.Status == GattCommunicationStatus.Success)
-                            {
-                                var characteristics = result_.Characteristics;
-                                foreach (var characteristic in characteristics)
-                                {
-                                    Debug.WriteLine("Char " + characteristic.Uuid + "-");
-                                    //Debug.WriteLine("Handle " + characteristic.AttributeHandle + "-");
-                                    if (characteristic.Uuid.ToString() == DFUService.DFUControlPoint)
-                                    {
-                                        Debug.WriteLine("DFU Control point found " + characteristic.UserDescription);
-                                        this.controlPoint = characteristic;
-                                        characteristicsControl++;
-                                    }
-                                    else if (characteristic.Uuid.ToString() == DFUService.DFUPacket)
-                                    {
-                                        Debug.WriteLine("Packet found " + characteristic.UserDescription);
-                                        this.packet = characteristic;
-                                        characteristicsControl++;
-                                    }
-                                    else if (characteristic.Uuid.ToString() == DFUService.DFUVersion)
-                                    {
-                                        Debug.WriteLine("DFU Version found " + characteristic.UserDescription);
-                                        this.dFUVersion = characteristic;
-                                    }
+                //await serviceScan(bluetoothLeDevice);
+                await bluetoothLeDevice.GetGattServicesAsync();
 
-
-                                    GattDescriptorsResult result2_ = await characteristic.GetDescriptorsAsync();
-                                    var descriptors = result2_.Descriptors;
-                                    foreach (var descriptor in descriptors)
-                                    {
-                                        Debug.WriteLine("Descr " + descriptor.Uuid + "-");
-                                        Debug.WriteLine("Handle " + descriptor.AttributeHandle + "-");
-                                        if (descriptor.Uuid.ToString() == DFUService.CCCD)
-                                            this.cccd = descriptor;
-
-                                    }
-
-
-                                }
-                                if (characteristicsControl == 2)
-                                    await startFirmwareUpdate(device);
-                                else {
-                                    log("Controlpoint or packet not found", "");
-                                }
-                                //UNUSED_startFirmwareUpdate__();
-                                //await StartFirmwareUpdate2_();                                        
-                            }
-                            break;
-                        }
-                    }
+                for (int i = 0; i < 200; i++) {
+                    log("Test", "");
                 }
-                else
-                {
-                    Debug.WriteLine("Status error: " + result.Status.ToString() + " need to restarte the device");
 
-                }
             }
             catch (Exception e)
             {
                 Debug.WriteLine("ERROR: Accessing2 your device failed." + Environment.NewLine + e.Message + "\n" + e.StackTrace);
             }
         }
-
+        int connections = 0;
+        /// <summary>
+        /// Invoked when a connection is established to the Bluetooth device
+        /// </summary>
+        /// <param name="sender">The watcher object that sent the notification</param>
+        /// <param name="args">The updated device object properties</param>
         private void ConnectionStatusChanged(BluetoothLEDevice sender, object args)
         {
-            log("Connection changed " + sender.ConnectionStatus, "");
+            log("Connection changed " + sender.Name+ " " + sender.ConnectionStatus, "");
+            if (sender.ConnectionStatus == BluetoothConnectionStatus.Connected)
+            {
+                Debug.WriteLine("Connections " + ++connections);               
+                
+                log("Device " + sender.Name + " " + parseDeviceAddress(sender.DeviceInformation.Id) + " connected. Updating firmware...", "");
+                
+            }
+            else
+            {
+                this.controlPoint.ValueChanged -= controlPoint_ValueChanged;
+                bluetoothLeDevice.ConnectionStatusChanged -= ConnectionStatusChanged;
+                sender.ConnectionStatusChanged -= ConnectionStatusChanged;
+                /*connectToDevice(sender.DeviceInformation);
+                bluetoothLeDevice.ConnectionStatusChanged -= ConnectionStatusChanged;
+                sender.ConnectionStatusChanged -= ConnectionStatusChanged;*/
+
+            }
+            serviceScan(sender);
         }
+
+        private async Task serviceScan(BluetoothLEDevice bluetoothLeDevice) {
+            int characteristicsControl = 0;
+            GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync();
+            if (result.Status == GattCommunicationStatus.Success)
+            {
+                //Scan the available services
+                var services = result.Services;
+                foreach (var service_ in services)
+                {
+                    Debug.WriteLine("Service " + service_.Uuid);
+                    //If DFUService found...
+                    if (service_.Uuid == new Guid(DFUService.DFUService_UUID))
+                    { //NRF52 DFU Service
+                        Debug.WriteLine("DFU Service found");
+                        IsServiceInitialized = true;
+                        service = service_;
+                        //Scan the available characteristics
+                        GattCharacteristicsResult result_ = await service.GetCharacteristicsAsync();
+                        if (result_.Status == GattCommunicationStatus.Success)
+                        {
+                            var characteristics = result_.Characteristics;
+                            foreach (var characteristic in characteristics)
+                            {
+                                Debug.WriteLine("Char " + characteristic.Uuid + "-");
+                                //Debug.WriteLine("Handle " + characteristic.AttributeHandle + "-");
+                                if (characteristic.Uuid.ToString() == DFUService.DFUControlPoint)
+                                {
+                                    Debug.WriteLine("DFU Control point found " + characteristic.UserDescription);
+                                    this.controlPoint = characteristic;
+                                    characteristicsControl++;
+                                }
+                                else if (characteristic.Uuid.ToString() == DFUService.DFUPacket)
+                                {
+                                    Debug.WriteLine("Packet found " + characteristic.UserDescription);
+                                    this.packet = characteristic;
+                                    characteristicsControl++;
+                                }
+                                else if (characteristic.Uuid.ToString() == DFUService.DFUVersion)
+                                {
+                                    Debug.WriteLine("DFU Version found " + characteristic.UserDescription);
+                                    this.dFUVersion = characteristic;
+                                }
+
+
+                                GattDescriptorsResult result2_ = await characteristic.GetDescriptorsAsync();
+                                var descriptors = result2_.Descriptors;
+                                foreach (var descriptor in descriptors)
+                                {
+                                    Debug.WriteLine("Descr " + descriptor.Uuid + "-");
+                                    //Debug.WriteLine("Handle " + descriptor.AttributeHandle + "-");
+                                    if (descriptor.Uuid.ToString() == DFUService.CCCD)
+                                        this.cccd = descriptor;
+
+                                }
+
+
+                            }
+                            if (characteristicsControl == 2)
+                                await startFirmwareUpdate();
+                            else
+                            {
+                                log("Controlpoint or packet not found", "");
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Status error: " + result.Status.ToString() + " need to restarte the device");
+
+            }
+        }
+
+        
 
         /// <summary>
         /// StartFirmwareUpdate
+        /// Swith on bootloader mode and send the size of the image.
+        /// The procedure continue after the callback of ControlPointValueChanged
         /// </summary>
         /// <returns></returns>
-        private async Task startFirmwareUpdate(DeviceInformation device)
+        private async Task startFirmwareUpdate()
         {
             if (this.controlPoint.Uuid.ToString() != DFUService.DFUControlPoint)
             {
@@ -467,40 +411,24 @@ namespace OTADFUApplication
                 //If the board is not in DFU mode is necessary to switch in bootloader mode
                 if (await checkDFUStatus() == 1)
                 {
+                    log("Switching in bootloader mode", "");
                     //await Task.Delay(1000);
                     await switchOnBootLoader();
-                    await Task.Delay(1000);
+                    //await Task.Delay(1000);
                     //this.controlPoint = null;
-                    BluetoothLEDevice bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
-                    bluetoothLeDevice.Dispose();
-                    await connectToDevice(device);
                     //var res = await device.Pairing.PairAsync();
                     //log("Pair:" + res.Status, "");
                     //
-                    return;
+                    //return;
                 }
                 else
                 {
-                    controlPoint.ValueChanged += controlPoint_ValueChanged;
-                    // In order to avoid unnecessary communication with the device, determine if the device is already 
-                    // correctly configured to send notifications.
-                    // By default ReadClientCharacteristicConfigurationDescriptorAsync will attempt to get the current
-                    // value from the system cache and communication with the device is not typically required.
-                    await Task.Delay(1000);
-                    var currentDescriptorValue = await controlPoint.ReadClientCharacteristicConfigurationDescriptorAsync();
-
-                    if (currentDescriptorValue.Status == GattCommunicationStatus.Success)
-                    {
-                        log("Descriptor com success " + controlPoint.UserDescription, "");
-                    }
-                    else
-                        log("Descriptor com UNsuccess " + controlPoint.UserDescription, "");
+                    this.controlPoint.ValueChanged += controlPoint_ValueChanged;
+                    
                     try
                     {
                         //await Task.Delay(1000);
                         Debug.WriteLine("Starting firmware update...");
-                        
-
                         //# Send 'START DFU' + Application Command 0x04
                         if (await this.switchOnBootLoader())
                         {                            
@@ -517,8 +445,7 @@ namespace OTADFUApplication
             }
             catch (Exception e) {
                 log(e.Message + " " + e.StackTrace, "[startFirmwareUpdate]");
-                Debug.WriteLine(e.Message + " " + e.StackTrace);
-                await device.Pairing.UnpairAsync();
+                Debug.WriteLine(e.Message + " " + e.StackTrace);                
             }
         }
 
@@ -533,14 +460,14 @@ namespace OTADFUApplication
             var properties = this.controlPoint.CharacteristicProperties;
             if (properties.HasFlag(GattCharacteristicProperties.Notify))
             {
-                //log(""+controlPoint.Service.Device.ConnectionStatus, "");
-                GattCommunicationStatus status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+
+                GattCommunicationStatus status = await this.controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                 if (status == GattCommunicationStatus.Success)
                 {
                     //# Send 'START DFU' + Application Command
                     //self._dfu_state_set(0x0104)
                     var buffer = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_StartDfu, (byte)FirmwareTypeEnum.Application);
-                    GattCommunicationStatus status1 = await controlPoint.WriteValueAsync(buffer);  //Go in DFU Mode
+                    GattCommunicationStatus status1 = await this.controlPoint.WriteValueAsync(buffer);  //Go in DFU Mode
                     if (status1 == GattCommunicationStatus.Success)
                     {
                         log("switchOnBootLoader success", "switchOnBootLoader");
@@ -624,7 +551,6 @@ namespace OTADFUApplication
         /// </summary>
         /// <param name="service"></param>
         /// <returns></returns>
-
         public async Task<bool> UpdateAvailableDevice(GattDeviceService service)
         {
             try
@@ -814,9 +740,12 @@ namespace OTADFUApplication
         /// <param name="trunks"></param>
         private void sendTrunks(byte[][] trunks)
         {
-            log("Trunk len:" + trunks.Length, "Status");
-            log("Trunk:" + sentTimes + " of " + sendFullPackCompleteIndicator, "Status");
-            log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
+            //log("Trunk len:" + trunks.Length, "Status");
+            //log("Trunk:" + sentTimes + " of " + sendFullPackCompleteIndicator, "Status");
+            //log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
+
+            log((float)sentTimes/ (float)sendFullPackCompleteIndicator *100+"", "");
+
             if (sentTimes == sendFullPackCompleteIndicator)
             {
                 int limitation = sentTimes + sendPartialPacketsNumberOfTimes;
@@ -859,41 +788,7 @@ namespace OTADFUApplication
                 sentTimes++;
             }
         }
-
-        /// <summary>
-        /// Write the image trunks to the packet characteristic
-        /// </summary>
-        /// <param name="trunks"></param>
-        /// <param name="limitation"></param>
-        private async void WriteImage2(byte[][] trunks, int limitation)
-        {
-            while (sentTimes < limitation)
-            {
-                if (sentTimes > trunks[sentTimes].Length)
-                {
-                    log("sentTimes:" + sentTimes + " trunks:" + trunks[sentTimes].Length, "Exception");
-                    throw new ApplicationArgumentException();
-                }
-
-                /*
-                 * var buffer = deviceFirmwareUpdateControlPointCharacteristics.
-                 * PartialOfFirmwareImage(trunks, sentTimes);
-                 */
-
-                var temp = trunks[sentTimes];
-                IBuffer buffer = temp.AsBuffer();
-
-                GattCommunicationStatus status = await packet.WriteValueAsync(buffer, GattWriteOption.WriteWithoutResponse);
-                sendedBytes += trunks[sentTimes].Length;
-                if (status == GattCommunicationStatus.Success)
-                    log("Trunk:" + sentTimes + " of " + limitation + " Bytes:" + sendedBytes, "Status");
-                else
-                    log("Trunk:" + sentTimes + " Unreacheable", "Status");
-
-                sentTimes++;
-            }
-        }
-
+        
         /// <summary>
         /// Check the DFU Version
         /// </summary>
@@ -922,43 +817,7 @@ namespace OTADFUApplication
             
             
         }
-
         
-
-        /// <summary>
-        /// Invoked when a connection is established to the Bluetooth device
-        /// </summary>
-        /// <param name="sender">The watcher object that sent the notification</param>
-        /// <param name="args">The updated device object properties</param>
-        private async void DeviceConnection_Updated(PnpObjectWatcher sender, PnpObjectUpdate args)
-        {
-            var connectedProperty = args.Properties["System.Devices.Connected"];
-            bool isConnected = false;
-            if ((deviceContainerId == args.Id) && Boolean.TryParse(connectedProperty.ToString(), out isConnected) &&
-                isConnected)
-            {
-                var status = await controlPoint.WriteClientCharacteristicConfigurationDescriptorAsync(
-                    CHARACTERISTIC_NOTIFICATION_TYPE);
-
-                if (status == GattCommunicationStatus.Success)
-                {
-                    IsServiceInitialized = true;
-
-                    // Once the Client Characteristic Configuration Descriptor is set, the watcher is no longer required
-                    watcher.Stop();
-                    watcher = null;
-                }
-
-                // Notifying subscribers of connection state updates
-                if (DeviceConnectionUpdated != null)
-                {
-                    DeviceConnectionUpdated(isConnected);
-                }
-            }
-        }
-
-        
-
         /// <summary>
         /// Invoked when Windows receives data from your Bluetooth device.
         /// </summary>
@@ -966,7 +825,7 @@ namespace OTADFUApplication
         /// <param name="args">The new characteristic value sent by the device.</param>
         private async void controlPoint_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            log("controlPoint_ValueChanged", "");
+            //log("controlPoint_ValueChanged", "");
             var data = new byte[args.CharacteristicValue.Length];
 
             DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
@@ -977,7 +836,8 @@ namespace OTADFUApplication
 
             var messageType = stepAt[1];
 
-            log("[controlPoint_ValueChanged]Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
+            if(verboseMode)
+                log("[controlPoint_ValueChanged]Step:" + stepAt[0] + " MessageType:" + messageType, "Steps");
 
             //Debug
             try
@@ -1025,7 +885,7 @@ namespace OTADFUApplication
 
                     break;
                 case DfuOperationCode.PacketReceiptNotification:
-                    Debug.WriteLine("PacketReceiptNotification");
+                    //Debug.WriteLine("PacketReceiptNotification");
 
                     var comfirmedBytes = Convert.ToInt32(stepAt[1]);
                     if (PacketReceiptConfirmed != null)
@@ -1047,7 +907,7 @@ namespace OTADFUApplication
                     await controlPoint.WriteValueAsync(ActiveAndResetCommand);
                     if (DeviceFirmwareUpdateComplete != null)
                         DeviceFirmwareUpdateComplete(true);
-
+                    
                     Stop();
                     break;
 

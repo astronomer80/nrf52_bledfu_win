@@ -44,35 +44,57 @@ namespace nrf52_bledfu_win_app
         public static Boolean verboseMode = true;
         StorageFile bin_file =null, dat_file=null;
         String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        private TextBox textBox;
+
+        public event RoutedEventHandler TextBoxLoad;
+        //public event RoutedEventHandler ButtonsLoad;
+        public event RoutedEventHandler PanelLoad;
+        public event RoutedEventHandler DevicesListBox_Load;
+
+
+
 
         public MainPage()
         {
             this.InitializeComponent();
+            
             time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             logfilename = "[" + time + "]_" + app_name + "_LOG.txt";
             this.scanonly = false;
-            if (this.scanonly == true)
-                this.log("Scan mode Only", "");
+            
             this.init();
         }
 
-        /// <summary>
-        /// Defines the Main asynchronous task
-        /// </summary>
-        /// <returns></returns>
+        
+
+            /// <summary>
+            /// Defines the Main asynchronous task
+            /// </summary>
+            /// <returns></returns>
         public async Task init()
         {
+            TextBoxLoad += new RoutedEventHandler(textBoxLoaded);
+            //ButtonsLoad += new RoutedEventHandler(ButtonsLoaded);
+            PanelLoad += new RoutedEventHandler(panelLoaded);
+            DevicesListBox_Load += new RoutedEventHandler(devicesListBox_Loaded);
+
+
             Debug.WriteLine("LogPath:" + logfilename);
             //this.log("MainTask", "");
             try
             {
+                if (this.scanonly == true)
+                    this.log("Scan mode Only", "");
+
                 this.log(this.app_name, "");
                 await this.getFiles();
 
                 if (this.bin_file != null && this.dat_file != null)
                     this.discovery();
                 else
+                {
                     log("Both bin and dat file not found", "");
+                }
                 //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)
@@ -81,6 +103,41 @@ namespace nrf52_bledfu_win_app
             }
         }
 
+        private async void DevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            Debug.WriteLine("Test");
+        }
+
+        private void devicesListBox_Loaded(object sender, RoutedEventArgs args)
+        {
+            Debug.WriteLine("Test1");
+            ListBox DevicesListBox = (ListBox)sender;
+           
+            DevicesListBox.Items.Add("String");
+        }
+
+        private void textBoxLoaded(Object sender, RoutedEventArgs e)
+        {
+
+            this.textBox= (TextBox)sender;
+
+        }
+
+        private void panelLoaded(Object sender, RoutedEventArgs e)
+        {
+
+            RelativePanel panel = (RelativePanel)sender;
+
+        }
+
+        private void ButtonsLoaded(Object sender, RoutedEventArgs e)
+        {
+
+            Button button = (Button)sender;
+            Button button1 = button;
+
+        }
+        
         async Task getFiles()
         {
             try
@@ -153,7 +210,8 @@ namespace nrf52_bledfu_win_app
                     await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                     () =>
                     {
-                        this.textBox.Text = this.textLog;
+                        if( this.textBox != null)
+                            this.textBox.Text = this.textLog;
                     });
 
                 }

@@ -7,8 +7,37 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBox x:Name="textBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
+    <Hub Header="nRF52 OTA DFU">
+        <HubSection Header="Devices" Width="150">
+            <DataTemplate>
+                <ListBox x:Name="DevicesListBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" SelectionChanged="DevicesListBox_SelectionChanged" Loaded="DevicesListBox_Load" Width="100w">
+                    <Button x:Name="Button" Content="Device1" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Left" Loaded="ButtonsLoaded" Margin="-10,-10,-10,-10" Width="100" />
+                        <!--<Button x:Name="btn3" Content="cc" RelativePanel.Below="Button" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Stretch" />-->
+                    
+                </ListBox>
 
-    </Grid>
+                
+                <!--
+                <Grid HorizontalAlignment="Stretch" >
+                    <RelativePanel VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+                        <Button x:Name="btn1" Content="btn1" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Left" />
+                        <Button x:Name="btn2" Content="btn2" RelativePanel.AlignHorizontalCenterWithPanel="True" HorizontalAlignment="Center" />
+                        <Button x:Name="btn3" Content="btn3" RelativePanel.RightOf="btn2" RelativePanel.LeftOf="btn4" HorizontalAlignment="Center" />
+                        <Button x:Name="btn4" Content="btn4" RelativePanel.AlignRightWithPanel="True" HorizontalAlignment="Right" />
+                    </RelativePanel>
+                </Grid>
+-->
+            </DataTemplate>
+        </HubSection>
+        <HubSection Width="200">
+            <DataTemplate>
+                <Grid>
+                    <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+                        <TextBox x:Name="textBox" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" HorizontalAlignment="Right" Width="auto" Loaded="textBoxLoaded"/>
+                    </ScrollViewer>
+
+                </Grid>
+            </DataTemplate>
+        </HubSection>
+    </Hub>
 </Page>

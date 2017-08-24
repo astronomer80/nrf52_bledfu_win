@@ -7,9 +7,38 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBox x:ConnectionId='1' x:Name="textBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
+    <Hub Header="nRF52 OTA DFU">
+        <HubSection Header="Devices" Width="70">
+            <DataTemplate>
+                <ListBox x:ConnectionId='2' x:Name="DevicesListBox" HorizontalAlignment="Stretch" VerticalAlignment="Top"                                                                                >
+                    <Button x:ConnectionId='3' x:Name="Button" Content="Device1" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Left"                        />
+                        <!--<Button x:Name="btn3" Content="cc" RelativePanel.Below="Button" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Stretch" />-->
+                    
+                </ListBox>
 
-    </Grid>
+                
+                <!--
+                <Grid HorizontalAlignment="Stretch" >
+                    <RelativePanel VerticalAlignment="Center" HorizontalAlignment="Stretch" >
+                        <Button x:Name="btn1" Content="btn1" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Left" />
+                        <Button x:Name="btn2" Content="btn2" RelativePanel.AlignHorizontalCenterWithPanel="True" HorizontalAlignment="Center" />
+                        <Button x:Name="btn3" Content="btn3" RelativePanel.RightOf="btn2" RelativePanel.LeftOf="btn4" HorizontalAlignment="Center" />
+                        <Button x:Name="btn4" Content="btn4" RelativePanel.AlignRightWithPanel="True" HorizontalAlignment="Right" />
+                    </RelativePanel>
+                </Grid>
+-->
+            </DataTemplate>
+        </HubSection>
+        <HubSection>
+            <DataTemplate>
+                <Grid>
+                    <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+                        <TextBox x:ConnectionId='1' x:Name="textBox" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" HorizontalAlignment="Right" Width="auto"                       />
+                    </ScrollViewer>
+
+                </Grid>
+            </DataTemplate>
+        </HubSection>
+    </Hub>
 </Page>
 
