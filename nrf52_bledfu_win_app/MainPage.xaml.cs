@@ -38,8 +38,8 @@ namespace nrf52_bledfu_win_app
         String version = "0.1";
         String app_name = "Arduino OTA_DFU for Nordic nRF5x";
         bool scanonly, devicefound;
-        String given_device_address = "cc:32:24:e9:13:1a";
-        //String given_device_address = "e8:53:c7:3c:fc:e8";
+        //String given_device_address = "e7:59:c9:7e:da:1b";
+        String given_device_address = "e8:53:c7:3c:fc:e8";
         private static GattDeviceService service { get; set; }
         public static Boolean verboseMode = true;
         StorageFile bin_file =null, dat_file=null;
@@ -50,7 +50,9 @@ namespace nrf52_bledfu_win_app
         //public event RoutedEventHandler ButtonsLoad;
         public event RoutedEventHandler PanelLoad;
         public event RoutedEventHandler DevicesListBox_Load;
+        ListBox DevicesListBox;
 
+        Dictionary<String, DeviceInformation> elementslist = new Dictionary<string, DeviceInformation>();
 
 
 
@@ -106,14 +108,21 @@ namespace nrf52_bledfu_win_app
         private async void DevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             Debug.WriteLine("Test");
+            String name = (String)args.AddedItems[args.AddedItems.Count - 1];
+
+            DeviceInformation device = elementslist[name];
+            DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
+            await DFUService.Instance.connectToDevice(device);
+
+
         }
 
         private void devicesListBox_Loaded(object sender, RoutedEventArgs args)
         {
             Debug.WriteLine("Test1");
-            ListBox DevicesListBox = (ListBox)sender;
+            this.DevicesListBox = (ListBox)sender;
            
-            DevicesListBox.Items.Add("String");
+        //    DevicesListBox.Items.Add("String");
         }
 
         private void textBoxLoaded(Object sender, RoutedEventArgs e)
@@ -301,6 +310,16 @@ namespace nrf52_bledfu_win_app
             //throw new NotImplementedException();
         }
 
+        private async void addDevice(String devicename)
+        {
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    DevicesListBox.Items.Add(devicename);
+                });
+        }
+
+
         /// <summary>
         /// Event called when a new device is discovered
         /// </summary>
@@ -310,13 +329,15 @@ namespace nrf52_bledfu_win_app
         {
             //Console.WriteLine("[DeviceWatcher_Added]" + device.Name + " ID:" + device.Id);
             String deviceAddress = device.Id.Split('-')[1];
-
+            Debug.WriteLine(device.Id.ToString());
             Debug.WriteLine("Found Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
+            addDevice(device.Name);
             //Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
             //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
             //String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
             String[] param = new string[] { "System.Devices.ContainerId" };
 
+            elementslist.Add(device.Name, device);
             //foreach (var prop in device.Properties) {
             //    Console.WriteLine(prop.Key + " " + prop.Value);                        
             //}                    
@@ -331,9 +352,9 @@ namespace nrf52_bledfu_win_app
                 {
                     //DFUService dfs =DFUService.Instance;
                     //await dfs.InitializeServiceAsync(device);                    
-                    DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
+          //          DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
                     
-                    DFUService.Instance.connectToDevice(device);
+          //          DFUService.Instance.connectToDevice(device);
 
                 }
                 catch (Exception e)
