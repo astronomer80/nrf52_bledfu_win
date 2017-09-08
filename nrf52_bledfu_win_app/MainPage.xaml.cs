@@ -80,7 +80,6 @@ namespace nrf52_bledfu_win_app
             PanelLoad += new RoutedEventHandler(panelLoaded);
             DevicesListBox_Load += new RoutedEventHandler(devicesListBox_Loaded);
 
-
             Debug.WriteLine("LogPath:" + logfilename);
             //this.log("MainTask", "");
             try
@@ -105,12 +104,25 @@ namespace nrf52_bledfu_win_app
             }
         }
 
+        private void Scanbutton_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Inside Click event!");
+            try
+            {
+                this.discovery();
+            }
+            catch(Exception exception)
+            {
+                Debug.WriteLine(exception);
+            }
+        }
+
         private async void DevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             Debug.WriteLine("Test");
-            String name = (String)args.AddedItems[args.AddedItems.Count - 1];
+            String label = (String)args.AddedItems[args.AddedItems.Count - 1];
 
-            DeviceInformation device = elementslist[name];
+            DeviceInformation device = elementslist[label.Split('\n')[1]];
             DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
             await DFUService.Instance.connectToDevice(device);
 
@@ -302,7 +314,15 @@ namespace nrf52_bledfu_win_app
             //Console.WriteLine("[DeviceWatcher_Removed]" + device.Id);
 
             String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
+            DeviceInformation dev = elementslist[deviceAddress];
+            elementslist.Remove(deviceAddress);
             Debug.WriteLine("Removed Device address:[" + deviceAddress + "]");
+
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,() =>
+            {
+                DevicesListBox.Items.Remove(dev.Name + "\n" + deviceAddress);
+            });
+            
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
@@ -329,15 +349,24 @@ namespace nrf52_bledfu_win_app
         {
             //Console.WriteLine("[DeviceWatcher_Added]" + device.Name + " ID:" + device.Id);
             String deviceAddress = device.Id.Split('-')[1];
-            Debug.WriteLine(device.Id.ToString());
+            
             Debug.WriteLine("Found Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
-            addDevice(device.Name);
+
+            //check if the device has already been scanned before to add it
+            DeviceInformation dev;
+            elementslist.TryGetValue(deviceAddress, out dev);
+            if (dev == null)
+            { //device is not present yet
+                String label = device.Name + "\n" + deviceAddress;
+                addDevice(label);
+                elementslist.Add(deviceAddress, device);
+            }
             //Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
             //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
             //String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
             String[] param = new string[] { "System.Devices.ContainerId" };
 
-            elementslist.Add(device.Name, device);
+            
             //foreach (var prop in device.Properties) {
             //    Console.WriteLine(prop.Key + " " + prop.Value);                        
             //}                    
