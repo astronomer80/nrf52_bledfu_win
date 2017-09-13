@@ -50,7 +50,9 @@ namespace nrf52_bledfu_win_app
         //public event RoutedEventHandler ButtonsLoad;
         public event RoutedEventHandler PanelLoad;
         public event RoutedEventHandler DevicesListBox_Load;
+        public event RoutedEventHandler Progressbar_Load;
         ListBox DevicesListBox;
+        private ProgressBar progressbar;
 
         Dictionary<String, DeviceInformation> elementslist = new Dictionary<string, DeviceInformation>();
 
@@ -63,7 +65,7 @@ namespace nrf52_bledfu_win_app
             time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             logfilename = "[" + time + "]_" + app_name + "_LOG.txt";
             this.scanonly = false;
-            
+
             this.init();
         }
 
@@ -79,7 +81,8 @@ namespace nrf52_bledfu_win_app
             //ButtonsLoad += new RoutedEventHandler(ButtonsLoaded);
             PanelLoad += new RoutedEventHandler(panelLoaded);
             DevicesListBox_Load += new RoutedEventHandler(devicesListBox_Loaded);
-
+            Progressbar_Load += new RoutedEventHandler(progressbarLoaded);
+         
             Debug.WriteLine("LogPath:" + logfilename);
             //this.log("MainTask", "");
             try
@@ -88,14 +91,9 @@ namespace nrf52_bledfu_win_app
                     this.log("Scan mode Only", "");
 
                 this.log(this.app_name, "");
-                await this.getFiles();
-
-                if (this.bin_file != null && this.dat_file != null)
-                    this.discovery();
-                else
-                {
-                    log("Both bin and dat file not found", "");
-                }
+          
+                this.discovery();
+                
                 //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)
@@ -106,24 +104,33 @@ namespace nrf52_bledfu_win_app
 
         private void Scanbutton_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Inside Click event!");
-            try
-            {
-                this.discovery();
-            }
-            catch(Exception exception)
-            {
-                Debug.WriteLine(exception);
-            }
+
+            progressbar.Visibility = Visibility.Collapsed;
+            this.discovery();
+        }
+
+        private async void Filebutton_Click(object sender, RoutedEventArgs e)
+        {
+            progressbar.Visibility = Visibility.Collapsed;
+            await this.getFiles();
         }
 
         private async void DevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            Debug.WriteLine("Test");
-            String label = (String)args.AddedItems[args.AddedItems.Count - 1];
+            if (this.bin_file == null && this.dat_file == null)
+            {
+                log("Please first select the file you want to upload.", "");
+                return;
+            }
 
+            if (args.AddedItems.Count == 0)
+                return;
+            
+            String label = (String)args.AddedItems[args.AddedItems.Count - 1];
+            
             DeviceInformation device = elementslist[label.Split('\n')[1]];
             DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
+            this.progressbar.Visibility = Visibility.Visible;
             await DFUService.Instance.connectToDevice(device);
 
 
@@ -137,16 +144,22 @@ namespace nrf52_bledfu_win_app
         //    DevicesListBox.Items.Add("String");
         }
 
+        private void progressbarLoaded(object sender, RoutedEventArgs args)
+        {
+            Debug.WriteLine("Progressbar loaded");
+            this.progressbar = (ProgressBar)sender;
+        }
+
         private void textBoxLoaded(Object sender, RoutedEventArgs e)
         {
-
+            Debug.WriteLine("Texbox loaded");
             this.textBox= (TextBox)sender;
 
         }
 
         private void panelLoaded(Object sender, RoutedEventArgs e)
         {
-
+            Debug.WriteLine("Panel loaded");
             RelativePanel panel = (RelativePanel)sender;
 
         }
@@ -213,6 +226,16 @@ namespace nrf52_bledfu_win_app
             {
                 this.log(e.StackTrace, "Exception on readevices");
             }
+        }
+
+        public async void updateProgressBar(int value)
+        {
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    () =>
+                    {
+                        if (this.progressbar != null)
+                            this.progressbar.Value = value;
+                    });
         }
 
         public async void log(String message, String tag)
@@ -318,16 +341,20 @@ namespace nrf52_bledfu_win_app
             elementslist.Remove(deviceAddress);
             Debug.WriteLine("Removed Device address:[" + deviceAddress + "]");
 
-            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,() =>
-            {
-                DevicesListBox.Items.Remove(dev.Name + "\n" + deviceAddress);
-            });
-            
+            removeDevice(dev.Name + "\n" + deviceAddress);    
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             //throw new NotImplementedException();
+        }
+
+        private async void removeDevice(String label)
+        {
+         await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                DevicesListBox.Items.Remove(label);
+            });
         }
 
         private async void addDevice(String devicename)

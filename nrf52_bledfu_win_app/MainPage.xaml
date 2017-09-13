@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Hub Header="nRF52 OTA DFU">
-            
+
         <HubSection Header="Devices" Width="200">
             <DataTemplate>
                 <ListBox x:Name="DevicesListBox" HorizontalContentAlignment="Left" VerticalAlignment="Top" SelectionChanged="DevicesListBox_SelectionChanged" Loaded="DevicesListBox_Load" Width="200">
@@ -32,11 +32,12 @@
         <HubSection Width="200">
             <DataTemplate>
                 <Grid>
-                    <Button x:Name="scanbutton"  Content="Scan" Click="Scanbutton_Click"  Width="auto" Grid.Row="1" VerticalAlignment="Top"/>
-                    <ScrollViewer Grid.Row="2"  VerticalScrollMode="Auto" HorizontalAlignment="Right" VerticalScrollBarVisibility="Auto" Margin="0,40,-40,-40">
-                        <TextBox x:Name="textBox" TextWrapping="Wrap" Text="TextBox" HorizontalAlignment="Center" Width="auto" Loaded="textBoxLoaded" IsReadOnly="True"/>
+                    <Button x:Name="scanbutton"  Content="Scan" Click="Scanbutton_Click"  Width="auto" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Button x:Name="filebutton" Content="Select file" Click="Filebutton_Click" Width="auto" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                    <ScrollViewer Grid.Row="2"  VerticalScrollMode="Auto" HorizontalAlignment="Right" VerticalScrollBarVisibility="Auto" Margin="0,40,-40,40">
+                        <TextBox x:Name="textBox" Text="Arduino OTA_DFU for Nordic nRF5x" TextWrapping="Wrap" HorizontalAlignment="Center" Width="auto" Loaded="textBoxLoaded" IsReadOnly="True"/>
                     </ScrollViewer>
-                    
+                    <ProgressBar x:Name="progressbar" x:FieldModifier="public" VerticalAlignment="Bottom" Minimum="0" Maximum="100" Grid.Row="3" Grid.Column="1" Visibility="Visible" Loaded="progressbarLoaded" Margin="0, 500, 0, 0"/>
 
                 </Grid>
             </DataTemplate>
