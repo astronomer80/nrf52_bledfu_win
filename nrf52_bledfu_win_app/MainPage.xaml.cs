@@ -1,27 +1,21 @@
 ﻿using OTADFUApplication;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.AppService;
+using GalaSoft.MvvmLight.Messaging;
+using Windows.Foundation.Collections;
+using Windows.ApplicationModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -42,10 +36,10 @@ namespace nrf52_bledfu_win_app
         String given_device_address = "e8:53:c7:3c:fc:e8";
         private static GattDeviceService service { get; set; }
         public static Boolean verboseMode = true;
-        StorageFile bin_file =null, dat_file=null;
+        StorageFile bin_file =null, dat_file=null, hex_file = null, zip_file = null;
         String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         private TextBox textBox;
-
+        
         public event RoutedEventHandler TextBoxLoad;
         //public event RoutedEventHandler ButtonsLoad;
         public event RoutedEventHandler PanelLoad;
@@ -53,15 +47,15 @@ namespace nrf52_bledfu_win_app
         public event RoutedEventHandler Progressbar_Load;
         ListBox DevicesListBox;
         private ProgressBar progressbar;
-
+        
         Dictionary<String, DeviceInformation> elementslist = new Dictionary<string, DeviceInformation>();
-
-
-
+        StorageFolder localFolder;
+        bool flag;
+        
         public MainPage()
         {
             this.InitializeComponent();
-            
+
             time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             logfilename = "[" + time + "]_" + app_name + "_LOG.txt";
             this.scanonly = false;
@@ -69,12 +63,11 @@ namespace nrf52_bledfu_win_app
             this.init();
         }
 
-        
 
-            /// <summary>
-            /// Defines the Main asynchronous task
-            /// </summary>
-            /// <returns></returns>
+        /// <summary>
+        /// Defines the Main asynchronous task
+        /// </summary>
+        /// <returns></returns>
         public async Task init()
         {
             TextBoxLoad += new RoutedEventHandler(textBoxLoaded);
@@ -82,9 +75,17 @@ namespace nrf52_bledfu_win_app
             PanelLoad += new RoutedEventHandler(panelLoaded);
             DevicesListBox_Load += new RoutedEventHandler(devicesListBox_Loaded);
             Progressbar_Load += new RoutedEventHandler(progressbarLoaded);
-         
             Debug.WriteLine("LogPath:" + logfilename);
-            //this.log("MainTask", "");
+
+            Messenger.Default.Register<Migrate.UWP.Messages.ConnectionReadyMessage>(this, message =>
+            {
+                if (App.Connection != null)
+                    App.Connection.RequestReceived += Connection_RequestReceived;
+            });
+
+            // Retrieve local folder path
+            localFolder = ApplicationData.Current.LocalFolder;
+
             try
             {
                 if (this.scanonly == true)
@@ -104,13 +105,13 @@ namespace nrf52_bledfu_win_app
 
         private void Scanbutton_Click(object sender, RoutedEventArgs e)
         {
-
             progressbar.Visibility = Visibility.Collapsed;
             this.discovery();
         }
 
         private async void Filebutton_Click(object sender, RoutedEventArgs e)
         {
+
             progressbar.Visibility = Visibility.Collapsed;
             await this.getFiles();
         }
@@ -138,7 +139,6 @@ namespace nrf52_bledfu_win_app
 
         private void devicesListBox_Loaded(object sender, RoutedEventArgs args)
         {
-            Debug.WriteLine("Test1");
             this.DevicesListBox = (ListBox)sender;
            
         //    DevicesListBox.Items.Add("String");
@@ -146,13 +146,11 @@ namespace nrf52_bledfu_win_app
 
         private void progressbarLoaded(object sender, RoutedEventArgs args)
         {
-            Debug.WriteLine("Progressbar loaded");
             this.progressbar = (ProgressBar)sender;
         }
 
         private void textBoxLoaded(Object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Texbox loaded");
             this.textBox= (TextBox)sender;
 
         }
@@ -184,7 +182,20 @@ namespace nrf52_bledfu_win_app
                 openPicker.FileTypeFilter.Add(".dat");
                 openPicker.FileTypeFilter.Add(".zip");
                 openPicker.FileTypeFilter.Add(".hex");
-                
+
+                //delete old output from text view 
+                this.textLog = "";
+                this.log(this.app_name, "");
+
+                //clear file variables from the old file
+                this.bin_file = null;
+                this.dat_file = null;
+                this.zip_file = null;
+                this.hex_file = null;
+
+                //restore progress bar default value
+                this.updateProgressBar(0);
+
                 var filelist = await openPicker.PickMultipleFilesAsync();
                 foreach (var file in filelist)
                 {
@@ -194,39 +205,62 @@ namespace nrf52_bledfu_win_app
 
                     if (file.Name.EndsWith(".dat"))
                         this.dat_file = file;
+
+                    if (file.Name.EndsWith(".hex"))
+                        this.hex_file = file;
+
+                    if (file.Name.EndsWith(".zip"))
+                        this.zip_file = file;
                 }
             }
             catch (Exception e)
             {
                 this.log(e.StackTrace, "Exception on readevices");
+                return;
+            }
+
+            // Check if user chose some weird combination
+            if ((this.bin_file != null && this.hex_file != null) || (this.bin_file != null && this.zip_file != null) || (this.hex_file != null && this.zip_file != null))
+            {
+                log("Please select just one .zip, .bin, .hex file or both .bin and .dat files", "");
+                this.bin_file = null;
+                this.dat_file = null;
+                this.zip_file = null;
+                this.hex_file = null;
+                return;
+            }
+
+            if (this.bin_file != null && this.dat_file != null)
+                //files are ready, return
+                return;
+          
+            //use nrfutil if needed
+            if (this.hex_file != null | this.bin_file != null)
+            {
+                flag = false;
+                await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
             }
         }
 
-        async Task testAsync()
+        private async void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
-            try
-            {
-                        StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                //StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("test.txt"));
-                //var file1 = installedLocation.GetFileAsync("test.txt");
-                //StorageFile file = await StorageFile.GetFileFromPathAsync("test.txt");
-
-
-                //var folder = await StorageFolder.GetFolderFromPathAsync(@"C:\Primo");
-                StorageFile img = await folder.GetFileAsync(@"app_blink_dfu_500\s132_pca10040.bin");
-
-                IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
-                var test = firmwareImage_buffer.ToArray();
-                Debug.WriteLine(test);
-
-                
-
+            var deferral = args.GetDeferral();
+            ValueSet value = new ValueSet();
+            // send local folder path since nrfutil doesn't have right to write the output file in the installation folder
+            value.Add("path", this.localFolder.Path);
+            if (this.hex_file != null)
+                value.Add("file", this.hex_file.Path);
+            else if (this.bin_file != null)
+                value.Add("file", this.bin_file.Path);
+            else {
+                this.log("Error. Please try again", "");
+                value.Add("err", null);
             }
-            catch (Exception e)
-            {
-                this.log(e.StackTrace, "Exception on readevices");
-            }
+            await args.Request.SendResponseAsync(value);
+            deferral.Complete();
+            flag = true;
         }
+
 
         public async void updateProgressBar(int value)
         {
@@ -361,8 +395,12 @@ namespace nrf52_bledfu_win_app
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                 () =>
-                {
-                    DevicesListBox.Items.Add(devicename);
+                { //TODO : manage System.NullReferenceException: 'Object reference not set to an instance of an object.'
+                    try
+                    {
+                        DevicesListBox.Items.Add(devicename);
+                    }
+                    catch (System.NullReferenceException) { }
                 });
         }
 

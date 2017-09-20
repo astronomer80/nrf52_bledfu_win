@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" IgnorableNamespaces="uap mp rescap desktop">
   <Identity Name="a2b71e53-6ce1-4142-83e6-931eb650a5c1" Publisher="CN=aferr" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="a2b71e53-6ce1-4142-83e6-931eb650a5c1" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
@@ -20,10 +20,17 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.appService">
+          <uap:AppService Name="nrfutilWrapper" />
+        </uap:Extension>
+        <desktop:Extension Category="windows.fullTrustProcess" Executable="nrfutil_caller_app.exe"/>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
+      <rescap:Capability Name="runFullTrust"/>
     <DeviceCapability Name="bluetooth" />
   </Capabilities>
 </Package>

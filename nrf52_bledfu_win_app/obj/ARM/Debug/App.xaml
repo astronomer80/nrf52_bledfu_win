@@ -1,0 +1,9 @@
+﻿<Application
+    x:Class="nrf52_bledfu_win_app.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:nrf52_bledfu_win_app"
+    RequestedTheme="Light">
+
+</Application>
+

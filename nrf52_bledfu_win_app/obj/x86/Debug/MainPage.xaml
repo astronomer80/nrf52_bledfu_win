@@ -8,15 +8,15 @@
     mc:Ignorable="d">
 
     <Hub Header="nRF52 OTA DFU">
-        <HubSection Header="Devices" Width="70">
+
+        <HubSection Header="Devices" Width="200">
             <DataTemplate>
-                <ListBox x:ConnectionId='2' x:Name="DevicesListBox" HorizontalAlignment="Stretch" VerticalAlignment="Top"                                                                                >
-                    <Button x:ConnectionId='3' x:Name="Button" Content="Device1" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Left"                        />
-                        <!--<Button x:Name="btn3" Content="cc" RelativePanel.Below="Button" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Stretch" />-->
-                    
+                <ListBox x:ConnectionId='5' x:Name="DevicesListBox" HorizontalContentAlignment="Left" VerticalAlignment="Top"                                                                                 Width="200">
+                    <!--<Button x:Name="btn3" Content="cc" RelativePanel.Below="Button" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Stretch" />-->
+
                 </ListBox>
 
-                
+
                 <!--
                 <Grid HorizontalAlignment="Stretch" >
                     <RelativePanel VerticalAlignment="Center" HorizontalAlignment="Stretch" >
@@ -29,12 +29,15 @@
 -->
             </DataTemplate>
         </HubSection>
-        <HubSection>
+        <HubSection Width="200">
             <DataTemplate>
                 <Grid>
-                    <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
-                        <TextBox x:ConnectionId='1' x:Name="textBox" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" HorizontalAlignment="Right" Width="auto"                       />
+                    <Button x:ConnectionId='1' x:Name="scanbutton"  Content="Scan"                           Width="auto" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Button x:ConnectionId='2' x:Name="filebutton" Content="Select file"                          Width="auto" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                    <ScrollViewer Grid.Row="2"  VerticalScrollMode="Auto" HorizontalAlignment="Right" VerticalScrollBarVisibility="Auto" Margin="0,40,-40,40">
+                        <TextBox x:ConnectionId='4' x:Name="textBox" Text="Arduino OTA_DFU for Nordic nRF5x" TextWrapping="Wrap" HorizontalAlignment="Center" Width="auto"                        IsReadOnly="True"/>
                     </ScrollViewer>
+                    <ProgressBar x:ConnectionId='3' x:Name="progressbar" x:FieldModifier="public" VerticalAlignment="Bottom" Minimum="0" Maximum="100" Grid.Row="3" Grid.Column="1" Visibility="Visible"                            Margin="0, 500, 0, 0"/>
 
                 </Grid>
             </DataTemplate>

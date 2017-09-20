@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.AppService;
+using Windows.ApplicationModel.Background;
+using GalaSoft.MvvmLight.Messaging;
+
+namespace Migrate.UWP.Messages
+{
+    public class ConnectionReadyMessage
+    {
+    }
+}
 
 namespace nrf52_bledfu_win_app
 {
@@ -22,6 +22,8 @@ namespace nrf52_bledfu_win_app
     /// </summary>
     sealed partial class App : Application
     {
+        public static AppServiceConnection Connection;
+        private BackgroundTaskDeferral appServiceDeferral;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -73,6 +75,35 @@ namespace nrf52_bledfu_win_app
             }
         }
 
+
+        // This method will be called when the external program will be lauched.
+        // Called when app with nrfutil is launched. Allows to save the AppServiceConnection
+        // channel to send parameters to nrfutil
+        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        {
+            base.OnBackgroundActivated(args);
+            if (args.TaskInstance.TriggerDetails is AppServiceTriggerDetails)
+            {
+                appServiceDeferral = args.TaskInstance.GetDeferral();
+                AppServiceTriggerDetails details = args.TaskInstance.TriggerDetails as AppServiceTriggerDetails;
+                Connection = details.AppServiceConnection;
+                Messenger.Default.Send(new Migrate.UWP.Messages.ConnectionReadyMessage());
+                Connection.ServiceClosed += AppServiceConnection_ServiceClosed;
+                IBackgroundTaskInstance taskInstance = args.TaskInstance;
+                taskInstance.Canceled += TaskInstance_Canceled;
+            }
+        }
+
+        private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        {
+            appServiceDeferral.Complete();
+        }
+
+        private void AppServiceConnection_ServiceClosed(AppServiceConnection sender, AppServiceClosedEventArgs args)
+        {
+            appServiceDeferral.Complete();
+        }
+
         /// <summary>
         /// Invoked when Navigation to a certain page fails
         /// </summary>
@@ -96,5 +127,6 @@ namespace nrf52_bledfu_win_app
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+
     }
 }
