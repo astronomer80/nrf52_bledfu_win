@@ -1,6 +1,7 @@
 ﻿using OTADFUApplication;
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using Windows.ApplicationModel.AppService;
 using GalaSoft.MvvmLight.Messaging;
 using Windows.Foundation.Collections;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.Background;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -80,7 +82,11 @@ namespace nrf52_bledfu_win_app
             Messenger.Default.Register<Migrate.UWP.Messages.ConnectionReadyMessage>(this, message =>
             {
                 if (App.Connection != null)
+                {
                     App.Connection.RequestReceived += Connection_RequestReceived;
+                    App.Connection.ServiceClosed += AppServiceConnection_ServiceClosed;
+                    App.taskInstance.Canceled += TaskInstance_Canceled;
+                }
             });
 
             // Retrieve local folder path
@@ -233,17 +239,35 @@ namespace nrf52_bledfu_win_app
             if (this.bin_file != null && this.dat_file != null)
                 //files are ready, return
                 return;
-          
+
+            if(this.zip_file != null)
+            {
+                manageZip();
+                return;
+            }          
+
             //use nrfutil if needed
             if (this.hex_file != null | this.bin_file != null)
             {
-                flag = false;
                 await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
             }
         }
 
+        /// <summary>
+        /// Function called when AppService is up and running. Use the communication channel to send the file to be passed to nrfutil
+        /// and the folder where the nrfutil output will be written. When nrfutil complete its job TaskInstance_Canceled should be
+        /// called.
+        /// </summary>
         private async void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
+            try
+            {
+                File.Delete(localFolder.Path + "\\output.zip");
+            }
+            catch (ArgumentNullException)
+            {
+                // File doesn't exist. That's fine, continue.
+            }
             var deferral = args.GetDeferral();
             ValueSet value = new ValueSet();
             // send local folder path since nrfutil doesn't have right to write the output file in the installation folder
@@ -258,9 +282,60 @@ namespace nrf52_bledfu_win_app
             }
             await args.Request.SendResponseAsync(value);
             deferral.Complete();
-            flag = true;
         }
 
+        private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        {
+            App.appServiceDeferral.Complete();
+            // nrfutil has done its job. zip file is ready
+            manageZip();
+        }
+
+        private void AppServiceConnection_ServiceClosed(AppServiceConnection sender, AppServiceClosedEventArgs args)
+        {
+            App.appServiceDeferral.Complete();
+            // nrfutil has done its job. zip file is ready
+            manageZip();
+        }
+
+        /// <summary>
+        /// Extract .zip file and put .dat and .bin files in the respective global variables 
+        /// </summary>
+        private async void manageZip()
+        {
+            string filePath;
+            if(zip_file != null)
+            { // user chose a zip file
+                filePath = zip_file.Path;
+            }
+            else
+            { // nrfutil was used to create the zip file
+                filePath = localFolder.Path + "\\output.zip";
+                if (!File.Exists(filePath))
+                {
+                    log("nrfutil failed to create the package. Please try again.", "Error");
+                    return;
+                }
+            }
+
+            // Remove the old files if any
+            if(Directory.Exists(localFolder.Path + "\\output"))
+                Directory.Delete(localFolder.Path + "\\output", true);
+            ZipFile.ExtractToDirectory(filePath, localFolder.Path + "\\output");
+            StorageFolder outDirectory = await localFolder.GetFolderAsync("output");
+            String prova = outDirectory.Path;
+            foreach (string file in Directory.GetFiles(outDirectory.Path))
+            {
+                // File path is absolute. Retrieve file name by picking the substring from the last "\" + 1 to remove "\" character
+                string filename = file.Substring(file.LastIndexOf("\\") + 1);
+                
+                if (filename.EndsWith(".bin"))
+                    bin_file = await outDirectory.GetFileAsync(filename);
+                        
+                else if (filename.EndsWith(".dat"))
+                    dat_file = await outDirectory.GetFileAsync(filename);
+            }
+        }
 
         public async void updateProgressBar(int value)
         {

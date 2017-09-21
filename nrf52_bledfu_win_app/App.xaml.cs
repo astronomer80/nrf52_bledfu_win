@@ -23,7 +23,8 @@ namespace nrf52_bledfu_win_app
     sealed partial class App : Application
     {
         public static AppServiceConnection Connection;
-        private BackgroundTaskDeferral appServiceDeferral;
+        public static BackgroundTaskDeferral appServiceDeferral;
+        public static IBackgroundTaskInstance taskInstance;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -87,21 +88,9 @@ namespace nrf52_bledfu_win_app
                 appServiceDeferral = args.TaskInstance.GetDeferral();
                 AppServiceTriggerDetails details = args.TaskInstance.TriggerDetails as AppServiceTriggerDetails;
                 Connection = details.AppServiceConnection;
+                taskInstance = args.TaskInstance;
                 Messenger.Default.Send(new Migrate.UWP.Messages.ConnectionReadyMessage());
-                Connection.ServiceClosed += AppServiceConnection_ServiceClosed;
-                IBackgroundTaskInstance taskInstance = args.TaskInstance;
-                taskInstance.Canceled += TaskInstance_Canceled;
             }
-        }
-
-        private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
-        {
-            appServiceDeferral.Complete();
-        }
-
-        private void AppServiceConnection_ServiceClosed(AppServiceConnection sender, AppServiceClosedEventArgs args)
-        {
-            appServiceDeferral.Complete();
         }
 
         /// <summary>
