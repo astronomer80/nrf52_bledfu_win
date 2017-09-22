@@ -30,10 +30,8 @@ namespace nrf52_bledfu_win_app
     {
         private CoreDispatcher dispatcher { get; set; }
         String textLog = "";
-        String logfilename = "";
-        String version = "0.1";
         String app_name = "Arduino OTA_DFU for Nordic nRF5x";
-        bool scanonly, devicefound;
+        bool scanonly;
         //String given_device_address = "e7:59:c9:7e:da:1b";
         String given_device_address = "e8:53:c7:3c:fc:e8";
         private static GattDeviceService service { get; set; }
@@ -54,7 +52,6 @@ namespace nrf52_bledfu_win_app
             this.InitializeComponent();
 
             time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            logfilename = "[" + time + "]_" + app_name + "_LOG.txt";
             this.scanonly = false;
 
             this.init();
@@ -67,8 +64,6 @@ namespace nrf52_bledfu_win_app
         /// <returns></returns>
         public async Task init()
         {
-            Debug.WriteLine("LogPath:" + logfilename);
-
             Messenger.Default.Register<Migrate.UWP.Messages.ConnectionReadyMessage>(this, message =>
             {
                 if (App.Connection != null)
@@ -89,7 +84,7 @@ namespace nrf52_bledfu_win_app
 
                 this.log(this.app_name, "");
           
-                this.discovery();
+                //this.discovery();
                 
                 //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
@@ -102,6 +97,8 @@ namespace nrf52_bledfu_win_app
         private void Scanbutton_Click(object sender, RoutedEventArgs e)
         {
             updateProgressBar(0);
+            this.textLog = "";
+            this.log(this.app_name, "");
             this.discovery();
         }
 
@@ -126,7 +123,6 @@ namespace nrf52_bledfu_win_app
             
             DeviceInformation device = elementslist[label.Split('\n')[1]];
             DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
-            this.progressBar.Visibility = Visibility.Visible;
             await DFUService.Instance.connectToDevice(device);
 
 
@@ -155,6 +151,8 @@ namespace nrf52_bledfu_win_app
         
         async Task getFiles()
         {
+            string text = "Selected file:";
+
             try
             {
                 FileOpenPicker openPicker = new FileOpenPicker();
@@ -179,8 +177,6 @@ namespace nrf52_bledfu_win_app
                 //restore progress bar default value
                 this.updateProgressBar(0);
 
-                string text = "Selected file:"; 
-
                 var filelist = await openPicker.PickMultipleFilesAsync();
                 foreach (var file in filelist)
                 {
@@ -198,8 +194,6 @@ namespace nrf52_bledfu_win_app
                     if (file.Name.EndsWith(".zip"))
                         this.zip_file = file;
                 }
-
-                textblock.Text = text;
             }
             catch (Exception e)
             {
@@ -210,13 +204,15 @@ namespace nrf52_bledfu_win_app
             // Check if user chose some weird combination
             if ((this.bin_file != null && this.hex_file != null) || (this.bin_file != null && this.zip_file != null) || (this.hex_file != null && this.zip_file != null))
             {
-                log("Please select just one .zip, .bin, .hex file or both .bin and .dat files", "");
+                log("Please select just one .zip, .bin, .hex file or both .bin and .dat files", "Error");
                 this.bin_file = null;
                 this.dat_file = null;
                 this.zip_file = null;
                 this.hex_file = null;
                 return;
             }
+
+            textblock.Text = text;
 
             if (this.bin_file != null && this.dat_file != null)
                 //files are ready, return
@@ -231,6 +227,7 @@ namespace nrf52_bledfu_win_app
             //use nrfutil if needed
             if (this.hex_file != null | this.bin_file != null)
             {
+                log("Starting nrfutil to generate the package...", "");
                 await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
             }
         }
@@ -242,14 +239,10 @@ namespace nrf52_bledfu_win_app
         /// </summary>
         private async void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
-            try
-            {
+            // delete the old output file before creating a new one
+            if (File.Exists(localFolder.Path + "\\output.zip"))
                 File.Delete(localFolder.Path + "\\output.zip");
-            }
-            catch (ArgumentNullException)
-            {
-                // File doesn't exist. That's fine, continue.
-            }
+
             var deferral = args.GetDeferral();
             ValueSet value = new ValueSet();
             // send local folder path since nrfutil doesn't have right to write the output file in the installation folder
@@ -298,6 +291,7 @@ namespace nrf52_bledfu_win_app
                     log("nrfutil failed to create the package. Please try again.", "Error");
                     return;
                 }
+                log("Package created!", "");
             }
 
             // Remove the old files if any
@@ -338,7 +332,6 @@ namespace nrf52_bledfu_win_app
             try
             {
                 this.textLog = this.textLog + "\n" + message;
-                this.writeOnFile(message);
 
                 try
                 {
@@ -429,10 +422,10 @@ namespace nrf52_bledfu_win_app
 
             String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
             DeviceInformation dev = elementslist[deviceAddress];
-            elementslist.Remove(deviceAddress);
+            //elementslist.Remove(deviceAddress);
             Debug.WriteLine("Removed Device address:[" + deviceAddress + "]");
 
-            removeDevice(dev.Name + "\n" + deviceAddress);    
+            removeDevice(dev.Name + "\n" + deviceAddress, deviceAddress);    
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
@@ -440,24 +433,24 @@ namespace nrf52_bledfu_win_app
             //throw new NotImplementedException();
         }
 
-        private async void removeDevice(String label)
+        private async void removeDevice(String label, String deviceAddress)
         {
          await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 DevicesListbox.Items.Remove(label);
+                elementslist.Remove(deviceAddress);
             });
         }
 
-        private async void addDevice(String devicename)
+        private async void addDevice(String devicename, String deviceAddress, DeviceInformation device)
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                 () =>
-                { //TODO : manage System.NullReferenceException: 'Object reference not set to an instance of an object.'
-                    try
-                    {
+                {
+                    if(DevicesListbox != null) { 
                         DevicesListbox.Items.Add(devicename);
+                        elementslist.Add(deviceAddress, device);
                     }
-                    catch (System.NullReferenceException) { }
                 });
         }
 
@@ -480,8 +473,7 @@ namespace nrf52_bledfu_win_app
             if (dev == null)
             { //device is not present yet
                 String label = device.Name + "\n" + deviceAddress;
-                addDevice(label);
-                elementslist.Add(deviceAddress, device);
+                addDevice(label, deviceAddress, device);
             }
             //Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
             //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
@@ -493,27 +485,6 @@ namespace nrf52_bledfu_win_app
             //    Console.WriteLine(prop.Key + " " + prop.Value);                        
             //}                    
             //Console.WriteLine("Scan: " + scanonly + " Given:" + given_device_address + " Found:" + deviceAddress);                        
-
-            if (!scanonly && given_device_address == deviceAddress)
-            //TODO Only for test
-            //if (!scanonly && true)
-            {
-                this.devicefound = true;
-                try
-                {
-                    //DFUService dfs =DFUService.Instance;
-                    //await dfs.InitializeServiceAsync(device);                    
-          //          DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
-                    
-          //          DFUService.Instance.connectToDevice(device);
-
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                }
-
-            }
         }
 
         /// <summary>
@@ -567,26 +538,6 @@ namespace nrf52_bledfu_win_app
                 this.log("No devices", "Test");
             }
             Debug.WriteLine("Press a key to close");
-
-        }
-
-
-
-        private async void writeOnFile(String message)
-        {
-            try
-            {
-                // Create sample file; replace if exists.
-                Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                Windows.Storage.StorageFile sampleFile = await storageFolder.CreateFileAsync(logfilename, Windows.Storage.CreationCollisionOption.OpenIfExists);
-
-                await Windows.Storage.FileIO.AppendTextAsync(sampleFile, message + "\n");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("[log]" + e.Message + " " + e.StackTrace);
-
-            }
 
         }
     }

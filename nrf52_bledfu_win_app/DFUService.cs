@@ -259,7 +259,7 @@ namespace OTADFUApplication
         {
             try
             {                
-                log("Connecting to:" + parseDeviceAddress(device.Id) + "...", "");
+                log("Connecting to: " + parseDeviceAddress(device.Id) + "...", "");
                 //Perform the connection to the device
                 bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
                 bluetoothLeDevice.ConnectionStatusChanged += ConnectionStatusChanged;
@@ -312,6 +312,7 @@ namespace OTADFUApplication
             {
                 //Scan the available services
                 var services = result.Services;
+                bool DFUfound = false;
                 foreach (var service_ in services)
                 {
                     Debug.WriteLine("Service " + service_.Uuid);
@@ -319,6 +320,7 @@ namespace OTADFUApplication
                     if (service_.Uuid == new Guid(DFUService.DFUService_UUID))
                     { //NRF52 DFU Service
                         Debug.WriteLine("DFU Service found");
+                        DFUfound = true;
                         IsServiceInitialized = true;
                         service = service_;
                         //Scan the available characteristics
@@ -372,6 +374,8 @@ namespace OTADFUApplication
                         break;
                     }
                 }
+                if (!DFUfound)
+                    log("DFU Service was not found on this device!", "Error");
             }
             else
             {
