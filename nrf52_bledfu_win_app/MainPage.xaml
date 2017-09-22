@@ -6,17 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+<!--    <Hub Header="nRF52 OTA DFU">
 
-    <Hub Header="nRF52 OTA DFU">
-
-        <HubSection Header="Devices" Width="200">
+        <HubSection Header="Devices" Width="auto">
             <DataTemplate>
                 <ListBox x:Name="DevicesListBox" HorizontalContentAlignment="Left" VerticalAlignment="Top" SelectionChanged="DevicesListBox_SelectionChanged" Loaded="DevicesListBox_Load" Width="200">
-                    <!--<Button x:Name="btn3" Content="cc" RelativePanel.Below="Button" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Stretch" />-->
-
+-->                    <!--<Button x:Name="btn3" Content="cc" RelativePanel.Below="Button" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Stretch" />-->
+<!--
                 </ListBox>
 
-
+-->
                 <!--
                 <Grid HorizontalAlignment="Stretch" >
                     <RelativePanel VerticalAlignment="Center" HorizontalAlignment="Stretch" >
@@ -27,20 +26,51 @@
                     </RelativePanel>
                 </Grid>
 -->
+    <!--
             </DataTemplate>
         </HubSection>
-        <HubSection Width="200">
+        <HubSection Width="300">
             <DataTemplate>
                 <Grid>
                     <Button x:Name="scanbutton"  Content="Scan" Click="Scanbutton_Click"  Width="auto" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                     <Button x:Name="filebutton" Content="Select file" Click="Filebutton_Click" Width="auto" VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                    <ScrollViewer Grid.Row="2"  VerticalScrollMode="Auto" HorizontalAlignment="Right" VerticalScrollBarVisibility="Auto" Margin="0,40,-40,40">
-                        <TextBox x:Name="textBox" Text="Arduino OTA_DFU for Nordic nRF5x" TextWrapping="Wrap" HorizontalAlignment="Center" Width="auto" Loaded="textBoxLoaded" IsReadOnly="True"/>
+                    <ScrollViewer Grid.Row="2"  VerticalScrollMode="Auto" HorizontalAlignment="Right" VerticalScrollBarVisibility="Auto" Margin="0,40,0,40">
+                        <TextBox x:Name="textBox" Text="Arduino OTA_DFU for Nordic nRF5x" TextWrapping="Wrap" HorizontalAlignment="Center" Width="auto" Height="auto" Loaded="textBoxLoaded" IsReadOnly="True"/>
                     </ScrollViewer>
-                    <ProgressBar x:Name="progressbar" x:FieldModifier="public" VerticalAlignment="Bottom" Minimum="0" Maximum="100" Grid.Row="3" Grid.Column="1" Visibility="Visible" Loaded="progressbarLoaded" Margin="0, 500, 0, 0"/>
+                    <ProgressBar x:Name="progressbar" x:FieldModifier="public" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Width="Auto" Height="15" Minimum="0" Maximum="100" Grid.Row="3" Grid.Column="1" Visibility="Visible" Loaded="progressbarLoaded" Margin="0, 500, 0, 0"/>
 
                 </Grid>
             </DataTemplate>
         </HubSection>
     </Hub>
+    -->
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="439*"/>
+            <RowDefinition Height="91*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="40"  Text="nRF52 OTA DFU" HorizontalAlignment="Left" VerticalAlignment="Top" Height="53" Width="279"/>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+            <TextBlock Text="Devices" FontSize="25" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="33" Width="84"/>
+            <Button x:Name="scanbutton" Content="Scan" Click="Scanbutton_Click"  Width="auto" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="40,0,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="filebutton" Content="Select file" Click="Filebutton_Click"  Width="auto" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+            <TextBlock Text="Selected File:" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20,0,0,0" Loaded="texBlockFilesLoaded"/>
+        </StackPanel>
+        <ListBox Grid.Row="2" Grid.Column="0" x:Name="DevicesListBox" HorizontalContentAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,40,0,0" SelectionChanged="DevicesListBox_SelectionChanged" Loaded="devicesListBox_Loaded"/>
+        <ScrollViewer Grid.Row="2" Grid.Column="1"  VerticalScrollMode="Auto" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto">
+            <TextBox x:Name="textBox" Text="Arduino OTA_DFU for Nordic nRF5x" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="400" IsReadOnly="True" Margin="0,40,0,0" Loaded="textBoxLoaded" />
+        </ScrollViewer>
+        <ProgressBar Grid.Row="3" Grid.ColumnSpan="2" Height="10" x:Name="progressbar" x:FieldModifier="public" Minimum="0" Maximum="100"  Loaded="progressbarLoaded" />
+    </Grid>
+
 </Page>

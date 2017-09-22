@@ -40,19 +40,14 @@ namespace nrf52_bledfu_win_app
         public static Boolean verboseMode = true;
         StorageFile bin_file =null, dat_file=null, hex_file = null, zip_file = null;
         String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        private TextBox textBox;
+        private TextBox textbox;
         
-        public event RoutedEventHandler TextBoxLoad;
-        //public event RoutedEventHandler ButtonsLoad;
-        public event RoutedEventHandler PanelLoad;
-        public event RoutedEventHandler DevicesListBox_Load;
-        public event RoutedEventHandler Progressbar_Load;
-        ListBox DevicesListBox;
-        private ProgressBar progressbar;
+        ListBox DevicesListbox;
+        private ProgressBar progressBar;
+        TextBlock textblock;
         
         Dictionary<String, DeviceInformation> elementslist = new Dictionary<string, DeviceInformation>();
         StorageFolder localFolder;
-        bool flag;
         
         public MainPage()
         {
@@ -72,11 +67,6 @@ namespace nrf52_bledfu_win_app
         /// <returns></returns>
         public async Task init()
         {
-            TextBoxLoad += new RoutedEventHandler(textBoxLoaded);
-            //ButtonsLoad += new RoutedEventHandler(ButtonsLoaded);
-            PanelLoad += new RoutedEventHandler(panelLoaded);
-            DevicesListBox_Load += new RoutedEventHandler(devicesListBox_Loaded);
-            Progressbar_Load += new RoutedEventHandler(progressbarLoaded);
             Debug.WriteLine("LogPath:" + logfilename);
 
             Messenger.Default.Register<Migrate.UWP.Messages.ConnectionReadyMessage>(this, message =>
@@ -111,22 +101,21 @@ namespace nrf52_bledfu_win_app
 
         private void Scanbutton_Click(object sender, RoutedEventArgs e)
         {
-            progressbar.Visibility = Visibility.Collapsed;
+            updateProgressBar(0);
             this.discovery();
         }
 
         private async void Filebutton_Click(object sender, RoutedEventArgs e)
         {
-
-            progressbar.Visibility = Visibility.Collapsed;
+            updateProgressBar(0);
             await this.getFiles();
         }
 
         private async void DevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            if (this.bin_file == null && this.dat_file == null)
+            if (this.bin_file == null || this.dat_file == null)
             {
-                log("Please first select the file you want to upload.", "");
+                log("Please first select a valid file to be uploaded.", "");
                 return;
             }
 
@@ -137,7 +126,7 @@ namespace nrf52_bledfu_win_app
             
             DeviceInformation device = elementslist[label.Split('\n')[1]];
             DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
-            this.progressbar.Visibility = Visibility.Visible;
+            this.progressBar.Visibility = Visibility.Visible;
             await DFUService.Instance.connectToDevice(device);
 
 
@@ -145,35 +134,23 @@ namespace nrf52_bledfu_win_app
 
         private void devicesListBox_Loaded(object sender, RoutedEventArgs args)
         {
-            this.DevicesListBox = (ListBox)sender;
-           
-        //    DevicesListBox.Items.Add("String");
+            this.DevicesListbox = (ListBox)sender;           
         }
 
         private void progressbarLoaded(object sender, RoutedEventArgs args)
         {
-            this.progressbar = (ProgressBar)sender;
+            this.progressBar = (ProgressBar)sender;
         }
 
         private void textBoxLoaded(Object sender, RoutedEventArgs e)
         {
-            this.textBox= (TextBox)sender;
-
+            this.textbox= (TextBox)sender;
         }
 
-        private void panelLoaded(Object sender, RoutedEventArgs e)
+        private void texBlockFilesLoaded(Object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Panel loaded");
-            RelativePanel panel = (RelativePanel)sender;
-
-        }
-
-        private void ButtonsLoaded(Object sender, RoutedEventArgs e)
-        {
-
-            Button button = (Button)sender;
-            Button button1 = button;
-
+            this.textblock = (TextBlock)sender;
+            this.textblock.Text = "Selected File:\n";
         }
         
         async Task getFiles()
@@ -202,10 +179,13 @@ namespace nrf52_bledfu_win_app
                 //restore progress bar default value
                 this.updateProgressBar(0);
 
+                string text = "Selected file:"; 
+
                 var filelist = await openPicker.PickMultipleFilesAsync();
                 foreach (var file in filelist)
                 {
-                    log(file.Name, "");
+                    text += "\n" + file.Name;
+                    
                     if (file.Name.EndsWith(".bin"))
                         this.bin_file = file;
 
@@ -218,6 +198,8 @@ namespace nrf52_bledfu_win_app
                     if (file.Name.EndsWith(".zip"))
                         this.zip_file = file;
                 }
+
+                textblock.Text = text;
             }
             catch (Exception e)
             {
@@ -342,8 +324,8 @@ namespace nrf52_bledfu_win_app
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                     () =>
                     {
-                        if (this.progressbar != null)
-                            this.progressbar.Value = value;
+                        if (this.progressBar != null)
+                            this.progressBar.Value = value;
                     });
         }
 
@@ -363,8 +345,8 @@ namespace nrf52_bledfu_win_app
                     await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                     () =>
                     {
-                        if( this.textBox != null)
-                            this.textBox.Text = this.textLog;
+                        if( this.textbox != null)
+                            this.textbox.Text = this.textLog;
                     });
 
                 }
@@ -462,7 +444,7 @@ namespace nrf52_bledfu_win_app
         {
          await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                DevicesListBox.Items.Remove(label);
+                DevicesListbox.Items.Remove(label);
             });
         }
 
@@ -473,7 +455,7 @@ namespace nrf52_bledfu_win_app
                 { //TODO : manage System.NullReferenceException: 'Object reference not set to an instance of an object.'
                     try
                     {
-                        DevicesListBox.Items.Add(devicename);
+                        DevicesListbox.Items.Add(devicename);
                     }
                     catch (System.NullReferenceException) { }
                 });
