@@ -252,7 +252,7 @@ namespace nrf52_bledfu_win_app
             else if (this.bin_file != null)
                 value.Add("file", this.bin_file.Path);
             else {
-                this.log("Error. Please try again", "");
+                this.log("Please try again.", "Error");
                 value.Add("err", null);
             }
             await args.Request.SendResponseAsync(value);

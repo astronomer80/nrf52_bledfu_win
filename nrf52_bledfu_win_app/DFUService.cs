@@ -749,6 +749,7 @@ namespace OTADFUApplication
             //log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
 
             //log((float)sentTimes/ (float)sendFullPackCompleteIndicator *100+"", "");
+
             this.mainProgram.updateProgressBar((int)(sentTimes / (float)sendFullPackCompleteIndicator * 100));
             if (sentTimes == sendFullPackCompleteIndicator)
             {
@@ -907,6 +908,9 @@ namespace OTADFUApplication
                 case DfuOperationCode.ValidateFirmareSucceded:
                     Debug.WriteLine("ValidateFirmareSucceded");
                     log("Done.", "");
+
+                    sentTimes = 0;
+                    sendedBytes = 0;
 
                     IBuffer ActiveAndResetCommand = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_ActiveImageAndReset);
                     await controlPoint.WriteValueAsync(ActiveAndResetCommand);
