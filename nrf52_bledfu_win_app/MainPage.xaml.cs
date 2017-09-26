@@ -110,9 +110,15 @@ namespace nrf52_bledfu_win_app
 
         private async void DevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
+            // Check if selection has changed manually to let the user choose the same item again
+            if (DevicesListBox.SelectedIndex == -1)
+                return;
+
             if (this.bin_file == null || this.dat_file == null)
             {
                 log("Please first select a valid file to be uploaded.", "");
+                // Change selection manually to let the user choose the same item again. This will trigger SelectionChanged event another time
+                DevicesListBox.SelectedIndex = -1;
                 return;
             }
 
@@ -124,7 +130,6 @@ namespace nrf52_bledfu_win_app
             DeviceInformation device = elementslist[label.Split('\n')[1]];
             DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
             await DFUService.Instance.connectToDevice(device);
-
 
         }
 
@@ -168,7 +173,7 @@ namespace nrf52_bledfu_win_app
                 this.textLog = "";
                 this.log(this.app_name, "");
 
-                //clear file variables from the old file
+                //clear file variables from the old files
                 this.bin_file = null;
                 this.dat_file = null;
                 this.zip_file = null;
@@ -239,10 +244,6 @@ namespace nrf52_bledfu_win_app
         /// </summary>
         private async void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
-            // delete the old output file before creating a new one
-            if (File.Exists(localFolder.Path + "\\output.zip"))
-                File.Delete(localFolder.Path + "\\output.zip");
-
             var deferral = args.GetDeferral();
             ValueSet value = new ValueSet();
             // send local folder path since nrfutil doesn't have right to write the output file in the installation folder
@@ -321,6 +322,15 @@ namespace nrf52_bledfu_win_app
                         if (this.progressBar != null)
                             this.progressBar.Value = value;
                     });
+        }
+
+        public async void clearSelection()
+        {
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                   () =>
+                   {
+                       DevicesListBox.SelectedIndex = -1;
+                   });
         }
 
         public async void log(String message, String tag)
@@ -418,11 +428,17 @@ namespace nrf52_bledfu_win_app
 
         private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate device)
         {
-            //Console.WriteLine("[DeviceWatcher_Removed]" + device.Id);
-
             String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
-            DeviceInformation dev = elementslist[deviceAddress];
-            //elementslist.Remove(deviceAddress);
+
+            DeviceInformation dev;
+            try { 
+                dev = elementslist[deviceAddress];
+            }
+            catch (KeyNotFoundException)
+            {
+                return;
+            }
+
             Debug.WriteLine("Removed Device address:[" + deviceAddress + "]");
 
             removeDevice(dev.Name + "\n" + deviceAddress, deviceAddress);    

@@ -908,6 +908,7 @@ namespace OTADFUApplication
                 case DfuOperationCode.ValidateFirmareSucceded:
                     Debug.WriteLine("ValidateFirmareSucceded");
                     log("Done.", "");
+                    this.mainProgram.clearSelection();
 
                     sentTimes = 0;
                     sendedBytes = 0;
