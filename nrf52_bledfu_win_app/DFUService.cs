@@ -259,16 +259,16 @@ namespace OTADFUApplication
         {
             try
             {                
-                log("Connecting to:" + parseDeviceAddress(device.Id) + "...", "");
+                log("Connecting to: " + parseDeviceAddress(device.Id) + "...", "");
                 //Perform the connection to the device
                 bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
                 bluetoothLeDevice.ConnectionStatusChanged += ConnectionStatusChanged;
                 //await serviceScan(bluetoothLeDevice);
                 await bluetoothLeDevice.GetGattServicesAsync();
 
-                for (int i = 0; i < 200; i++) {
-                    log("Test", "");
-                }
+               // for (int i = 0; i < 200; i++) {
+               //     log("Test", "");
+               // }
 
             }
             catch (Exception e)
@@ -284,7 +284,7 @@ namespace OTADFUApplication
         /// <param name="args">The updated device object properties</param>
         private void ConnectionStatusChanged(BluetoothLEDevice sender, object args)
         {
-            log("Connection changed " + sender.Name+ " " + sender.ConnectionStatus, "");
+            //log("Connection changed " + sender.Name+ " " + sender.ConnectionStatus, "");
             if (sender.ConnectionStatus == BluetoothConnectionStatus.Connected)
             {
                 Debug.WriteLine("Connections " + ++connections);               
@@ -312,6 +312,7 @@ namespace OTADFUApplication
             {
                 //Scan the available services
                 var services = result.Services;
+                bool DFUfound = false;
                 foreach (var service_ in services)
                 {
                     Debug.WriteLine("Service " + service_.Uuid);
@@ -319,6 +320,7 @@ namespace OTADFUApplication
                     if (service_.Uuid == new Guid(DFUService.DFUService_UUID))
                     { //NRF52 DFU Service
                         Debug.WriteLine("DFU Service found");
+                        DFUfound = true;
                         IsServiceInitialized = true;
                         service = service_;
                         //Scan the available characteristics
@@ -372,6 +374,8 @@ namespace OTADFUApplication
                         break;
                     }
                 }
+                if (!DFUfound)
+                    log("DFU Service was not found on this device!", "Error");
             }
             else
             {
@@ -397,7 +401,7 @@ namespace OTADFUApplication
             }
             try
             {
-                log("startFirmwareUpdate", "");
+                //log("startFirmwareUpdate", "");
                 var properties = this.controlPoint.CharacteristicProperties;
                 if (properties.HasFlag(GattCharacteristicProperties.Notify))
                 {  
@@ -411,7 +415,7 @@ namespace OTADFUApplication
                 //If the board is not in DFU mode is necessary to switch in bootloader mode
                 if (await checkDFUStatus() == 1)
                 {
-                    log("Switching in bootloader mode", "");
+                    //log("Switching in bootloader mode", "");
                     //await Task.Delay(1000);
                     await switchOnBootLoader();
                     //await Task.Delay(1000);
@@ -434,7 +438,7 @@ namespace OTADFUApplication
                         {                            
                             await Task.Delay(1000);
                             var ret = await this.sendImageSize();
-                            log("ImageSizeCommand res: " + ret, "");
+                            //log("ImageSizeCommand res: " + ret, "");
                         }
                     }
                     catch (Exception e)
@@ -470,18 +474,18 @@ namespace OTADFUApplication
                     GattCommunicationStatus status1 = await this.controlPoint.WriteValueAsync(buffer);  //Go in DFU Mode
                     if (status1 == GattCommunicationStatus.Success)
                     {
-                        log("switchOnBootLoader success", "switchOnBootLoader");
+                        //log("Device switched in bootloader mode.", "");
                         return true;
                     }
                     else
                     {
-                        log("switchOnBootLoader UNsuccess", "switchOnBootLoader");
+                        //log("switchOnBootLoader UNsuccess", "switchOnBootLoader");
                         return false;
                     }
                 }
                 else
                 {
-                    log("Enable notificaton fail " + status, "switchOnBootLoader");
+                    //log("Enable notificaton fail " + status, "switchOnBootLoader");
                     return false;
                 }
             }
@@ -684,7 +688,7 @@ namespace OTADFUApplication
         {
             try
             {
-                log("sendImageSize", "");
+                //log("sendImageSize", "");
                 //TODO put the file names in a static variable or retrive the files from arguments of the main        
                 //var folder = await StorageFolder.GetFolderFromPathAsync(this.mainProgram.path);
                 //StorageFile img = await folder.GetFileAsync("s132_pca10040.bin");
@@ -744,8 +748,9 @@ namespace OTADFUApplication
             //log("Trunk:" + sentTimes + " of " + sendFullPackCompleteIndicator, "Status");
             //log("sendPartialPacketsNumberOfTimes:" + sendPartialPacketsNumberOfTimes, "Status");
 
-            log((float)sentTimes/ (float)sendFullPackCompleteIndicator *100+"", "");
+            //log((float)sentTimes/ (float)sendFullPackCompleteIndicator *100+"", "");
 
+            this.mainProgram.updateProgressBar((int)(sentTimes / (float)sendFullPackCompleteIndicator * 100));
             if (sentTimes == sendFullPackCompleteIndicator)
             {
                 int limitation = sentTimes + sendPartialPacketsNumberOfTimes;
@@ -803,12 +808,12 @@ namespace OTADFUApplication
                 byte[] value = new byte[readResult.Value.Length];
                 DataReader.FromBuffer(readResult.Value).ReadBytes(value);
 
-                if (value[0] == 1)
-                    log("The DFU Version of your device is : 1", "DFUService");
-                else if (value[0] == 8)
-                    log("The DFU Version of your device is : 8", "DFUService");
-                else
-                    log("The DFU Version of your device is not recognized:" + System.Text.Encoding.Unicode.GetChars(value)[0], "DFUService");
+                //if (value[0] == 1)
+                    //log("The DFU Version of your device is : 1", "DFUService");
+                //else if (value[0] == 8)
+                    //log("The DFU Version of your device is : 8", "DFUService");
+                //else
+                    //log("The DFU Version of your device is not recognized:" + System.Text.Encoding.Unicode.GetChars(value)[0], "DFUService");
 
                 return value[0];
             }
@@ -842,7 +847,7 @@ namespace OTADFUApplication
             //Debug
             try
             {
-                log("Step:" + stepAt[0] + " comfirmedBytes:" + Convert.ToInt32(stepAt[1]), "Steps");
+             //   log("Step:" + stepAt[0] + " comfirmedBytes:" + Convert.ToInt32(stepAt[1]), "Steps");
             }
             catch (Exception e) { }
 
@@ -878,7 +883,7 @@ namespace OTADFUApplication
 
                     IBuffer ReceiveFirmwareImageCommand = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_ReceiveFirmwareImage);
                     comStatus = await controlPoint.WriteValueAsync(ReceiveFirmwareImageCommand);
-                    log("Lenght:" + firmwareImage.Length, "Status");
+                    //log("Lenght:" + firmwareImage.Length, "Status");
                     firmwareImageTrunks = firmwareImage.Slice(MAX_SIZE_PER_GROUP);
                     this.numberOfTimes(firmwareImageTrunks);
                     sendTrunks(firmwareImageTrunks);
@@ -902,6 +907,11 @@ namespace OTADFUApplication
                     break;
                 case DfuOperationCode.ValidateFirmareSucceded:
                     Debug.WriteLine("ValidateFirmareSucceded");
+                    log("Done.", "");
+                    this.mainProgram.clearSelection();
+
+                    sentTimes = 0;
+                    sendedBytes = 0;
 
                     IBuffer ActiveAndResetCommand = getBufferFromCommand(DeviceFirmwareUpdateControlPointCharacteristics.OpCode_ActiveImageAndReset);
                     await controlPoint.WriteValueAsync(ActiveAndResetCommand);

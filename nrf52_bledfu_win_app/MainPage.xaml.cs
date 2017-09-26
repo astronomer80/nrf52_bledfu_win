@@ -1,27 +1,23 @@
 ﻿using OTADFUApplication;
 using System;
+using System.IO;
+using System.IO.Compression;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using Windows.ApplicationModel.AppService;
+using GalaSoft.MvvmLight.Messaging;
+using Windows.Foundation.Collections;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Background;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -34,67 +30,62 @@ namespace nrf52_bledfu_win_app
     {
         private CoreDispatcher dispatcher { get; set; }
         String textLog = "";
-        String logfilename = "";
-        String version = "0.1";
         String app_name = "Arduino OTA_DFU for Nordic nRF5x";
-        bool scanonly, devicefound;
-        String given_device_address = "cc:32:24:e9:13:1a";
-        //String given_device_address = "e8:53:c7:3c:fc:e8";
+        bool scanonly;
+        //String given_device_address = "e7:59:c9:7e:da:1b";
+        String given_device_address = "e8:53:c7:3c:fc:e8";
         private static GattDeviceService service { get; set; }
         public static Boolean verboseMode = true;
-        StorageFile bin_file =null, dat_file=null;
+        StorageFile bin_file =null, dat_file=null, hex_file = null, zip_file = null;
         String time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        private TextBox textBox;
-
-        public event RoutedEventHandler TextBoxLoad;
-        //public event RoutedEventHandler ButtonsLoad;
-        public event RoutedEventHandler PanelLoad;
-        public event RoutedEventHandler DevicesListBox_Load;
-
-
-
-
+        private TextBox textbox;
+        
+        ListBox DevicesListbox;
+        private ProgressBar progressBar;
+        TextBlock textblock;
+        
+        Dictionary<String, DeviceInformation> elementslist = new Dictionary<string, DeviceInformation>();
+        StorageFolder localFolder;
+        
         public MainPage()
         {
             this.InitializeComponent();
-            
+
             time = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            logfilename = "[" + time + "]_" + app_name + "_LOG.txt";
             this.scanonly = false;
-            
+
             this.init();
         }
 
-        
 
-            /// <summary>
-            /// Defines the Main asynchronous task
-            /// </summary>
-            /// <returns></returns>
+        /// <summary>
+        /// Defines the Main asynchronous task
+        /// </summary>
+        /// <returns></returns>
         public async Task init()
         {
-            TextBoxLoad += new RoutedEventHandler(textBoxLoaded);
-            //ButtonsLoad += new RoutedEventHandler(ButtonsLoaded);
-            PanelLoad += new RoutedEventHandler(panelLoaded);
-            DevicesListBox_Load += new RoutedEventHandler(devicesListBox_Loaded);
+            Messenger.Default.Register<Migrate.UWP.Messages.ConnectionReadyMessage>(this, message =>
+            {
+                if (App.Connection != null)
+                {
+                    App.Connection.RequestReceived += Connection_RequestReceived;
+                    App.Connection.ServiceClosed += AppServiceConnection_ServiceClosed;
+                    App.taskInstance.Canceled += TaskInstance_Canceled;
+                }
+            });
 
+            // Retrieve local folder path
+            localFolder = ApplicationData.Current.LocalFolder;
 
-            Debug.WriteLine("LogPath:" + logfilename);
-            //this.log("MainTask", "");
             try
             {
                 if (this.scanonly == true)
                     this.log("Scan mode Only", "");
 
                 this.log(this.app_name, "");
-                await this.getFiles();
-
-                if (this.bin_file != null && this.dat_file != null)
-                    this.discovery();
-                else
-                {
-                    log("Both bin and dat file not found", "");
-                }
+          
+                //this.discovery();
+                
                 //await scanpaireddevices(scanonly, bin_file, dat_file, device_address);
             }
             catch (Exception e)
@@ -103,43 +94,70 @@ namespace nrf52_bledfu_win_app
             }
         }
 
+        private void Scanbutton_Click(object sender, RoutedEventArgs e)
+        {
+            updateProgressBar(0);
+            this.textLog = "";
+            this.log(this.app_name, "");
+            this.discovery();
+        }
+
+        private async void Filebutton_Click(object sender, RoutedEventArgs e)
+        {
+            updateProgressBar(0);
+            await this.getFiles();
+        }
+
         private async void DevicesListBox_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            Debug.WriteLine("Test");
+            // Check if selection has changed manually to let the user choose the same item again
+            if (DevicesListBox.SelectedIndex == -1)
+                return;
+
+            if (this.bin_file == null || this.dat_file == null)
+            {
+                log("Please first select a valid file to be uploaded.", "");
+                // Change selection manually to let the user choose the same item again. This will trigger SelectionChanged event another time
+                DevicesListBox.SelectedIndex = -1;
+                return;
+            }
+
+            if (args.AddedItems.Count == 0)
+                return;
+            
+            String label = (String)args.AddedItems[args.AddedItems.Count - 1];
+            
+            DeviceInformation device = elementslist[label.Split('\n')[1]];
+            DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
+            await DFUService.Instance.connectToDevice(device);
+
         }
 
         private void devicesListBox_Loaded(object sender, RoutedEventArgs args)
         {
-            Debug.WriteLine("Test1");
-            ListBox DevicesListBox = (ListBox)sender;
-           
-            DevicesListBox.Items.Add("String");
+            this.DevicesListbox = (ListBox)sender;           
+        }
+
+        private void progressbarLoaded(object sender, RoutedEventArgs args)
+        {
+            this.progressBar = (ProgressBar)sender;
         }
 
         private void textBoxLoaded(Object sender, RoutedEventArgs e)
         {
-
-            this.textBox= (TextBox)sender;
-
+            this.textbox= (TextBox)sender;
         }
 
-        private void panelLoaded(Object sender, RoutedEventArgs e)
+        private void texBlockFilesLoaded(Object sender, RoutedEventArgs e)
         {
-
-            RelativePanel panel = (RelativePanel)sender;
-
-        }
-
-        private void ButtonsLoaded(Object sender, RoutedEventArgs e)
-        {
-
-            Button button = (Button)sender;
-            Button button1 = button;
-
+            this.textblock = (TextBlock)sender;
+            this.textblock.Text = "Selected File:\n";
         }
         
         async Task getFiles()
         {
+            string text = "Selected file:";
+
             try
             {
                 FileOpenPicker openPicker = new FileOpenPicker();
@@ -150,48 +168,169 @@ namespace nrf52_bledfu_win_app
                 openPicker.FileTypeFilter.Add(".dat");
                 openPicker.FileTypeFilter.Add(".zip");
                 openPicker.FileTypeFilter.Add(".hex");
-                
+
+                //delete old output from text view 
+                this.textLog = "";
+                this.log(this.app_name, "");
+
+                //clear file variables from the old files
+                this.bin_file = null;
+                this.dat_file = null;
+                this.zip_file = null;
+                this.hex_file = null;
+
+                //restore progress bar default value
+                this.updateProgressBar(0);
+
                 var filelist = await openPicker.PickMultipleFilesAsync();
                 foreach (var file in filelist)
                 {
-                    log(file.Name, "");
+                    text += "\n" + file.Name;
+                    
                     if (file.Name.EndsWith(".bin"))
                         this.bin_file = file;
 
                     if (file.Name.EndsWith(".dat"))
                         this.dat_file = file;
+
+                    if (file.Name.EndsWith(".hex"))
+                        this.hex_file = file;
+
+                    if (file.Name.EndsWith(".zip"))
+                        this.zip_file = file;
                 }
             }
             catch (Exception e)
             {
                 this.log(e.StackTrace, "Exception on readevices");
+                return;
+            }
+
+            // Check if user chose some weird combination
+            if ((this.bin_file != null && this.hex_file != null) || (this.bin_file != null && this.zip_file != null) || (this.hex_file != null && this.zip_file != null))
+            {
+                log("Please select just one .zip, .bin, .hex file or both .bin and .dat files", "Error");
+                this.bin_file = null;
+                this.dat_file = null;
+                this.zip_file = null;
+                this.hex_file = null;
+                return;
+            }
+
+            textblock.Text = text;
+
+            if (this.bin_file != null && this.dat_file != null)
+                //files are ready, return
+                return;
+
+            if(this.zip_file != null)
+            {
+                manageZip();
+                return;
+            }          
+
+            //use nrfutil if needed
+            if (this.hex_file != null | this.bin_file != null)
+            {
+                log("Starting nrfutil to generate the package...", "");
+                await FullTrustProcessLauncher.LaunchFullTrustProcessForCurrentAppAsync();
             }
         }
 
-        async Task testAsync()
+        /// <summary>
+        /// Function called when AppService is up and running. Use the communication channel to send the file to be passed to nrfutil
+        /// and the folder where the nrfutil output will be written. When nrfutil complete its job TaskInstance_Canceled should be
+        /// called.
+        /// </summary>
+        private async void Connection_RequestReceived(AppServiceConnection sender, AppServiceRequestReceivedEventArgs args)
         {
-            try
+            var deferral = args.GetDeferral();
+            ValueSet value = new ValueSet();
+            // send local folder path since nrfutil doesn't have right to write the output file in the installation folder
+            value.Add("path", this.localFolder.Path);
+            if (this.hex_file != null)
+                value.Add("file", this.hex_file.Path);
+            else if (this.bin_file != null)
+                value.Add("file", this.bin_file.Path);
+            else {
+                this.log("Please try again.", "Error");
+                value.Add("err", null);
+            }
+            await args.Request.SendResponseAsync(value);
+            deferral.Complete();
+        }
+
+        private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        {
+            App.appServiceDeferral.Complete();
+            // nrfutil has done its job. zip file is ready
+            manageZip();
+        }
+
+        private void AppServiceConnection_ServiceClosed(AppServiceConnection sender, AppServiceClosedEventArgs args)
+        {
+            App.appServiceDeferral.Complete();
+            // nrfutil has done its job. zip file is ready
+            manageZip();
+        }
+
+        /// <summary>
+        /// Extract .zip file and put .dat and .bin files in the respective global variables 
+        /// </summary>
+        private async void manageZip()
+        {
+            string filePath;
+            if(zip_file != null)
+            { // user chose a zip file
+                filePath = zip_file.Path;
+            }
+            else
+            { // nrfutil was used to create the zip file
+                filePath = localFolder.Path + "\\output.zip";
+                if (!File.Exists(filePath))
+                {
+                    log("nrfutil failed to create the package. Please try again.", "Error");
+                    return;
+                }
+                log("Package created!", "");
+            }
+
+            // Remove the old files if any
+            if(Directory.Exists(localFolder.Path + "\\output"))
+                Directory.Delete(localFolder.Path + "\\output", true);
+            ZipFile.ExtractToDirectory(filePath, localFolder.Path + "\\output");
+            StorageFolder outDirectory = await localFolder.GetFolderAsync("output");
+            String prova = outDirectory.Path;
+            foreach (string file in Directory.GetFiles(outDirectory.Path))
             {
-                        StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                //StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("test.txt"));
-                //var file1 = installedLocation.GetFileAsync("test.txt");
-                //StorageFile file = await StorageFile.GetFileFromPathAsync("test.txt");
-
-
-                //var folder = await StorageFolder.GetFolderFromPathAsync(@"C:\Primo");
-                StorageFile img = await folder.GetFileAsync(@"app_blink_dfu_500\s132_pca10040.bin");
-
-                IBuffer firmwareImage_buffer = await FileIO.ReadBufferAsync(img);
-                var test = firmwareImage_buffer.ToArray();
-                Debug.WriteLine(test);
-
+                // File path is absolute. Retrieve file name by picking the substring from the last "\" + 1 to remove "\" character
+                string filename = file.Substring(file.LastIndexOf("\\") + 1);
                 
+                if (filename.EndsWith(".bin"))
+                    bin_file = await outDirectory.GetFileAsync(filename);
+                        
+                else if (filename.EndsWith(".dat"))
+                    dat_file = await outDirectory.GetFileAsync(filename);
+            }
+        }
 
-            }
-            catch (Exception e)
-            {
-                this.log(e.StackTrace, "Exception on readevices");
-            }
+        public async void updateProgressBar(int value)
+        {
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    () =>
+                    {
+                        if (this.progressBar != null)
+                            this.progressBar.Value = value;
+                    });
+        }
+
+        public async void clearSelection()
+        {
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                   () =>
+                   {
+                       DevicesListBox.SelectedIndex = -1;
+                   });
         }
 
         public async void log(String message, String tag)
@@ -203,15 +342,14 @@ namespace nrf52_bledfu_win_app
             try
             {
                 this.textLog = this.textLog + "\n" + message;
-                this.writeOnFile(message);
 
                 try
                 {
                     await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                     () =>
                     {
-                        if( this.textBox != null)
-                            this.textBox.Text = this.textLog;
+                        if( this.textbox != null)
+                            this.textbox.Text = this.textLog;
                     });
 
                 }
@@ -290,16 +428,48 @@ namespace nrf52_bledfu_win_app
 
         private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate device)
         {
-            //Console.WriteLine("[DeviceWatcher_Removed]" + device.Id);
-
             String deviceAddress = device.Id.Split('-')[1].Split('#')[0];
+
+            DeviceInformation dev;
+            try { 
+                dev = elementslist[deviceAddress];
+            }
+            catch (KeyNotFoundException)
+            {
+                return;
+            }
+
             Debug.WriteLine("Removed Device address:[" + deviceAddress + "]");
+
+            removeDevice(dev.Name + "\n" + deviceAddress, deviceAddress);    
         }
 
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
             //throw new NotImplementedException();
         }
+
+        private async void removeDevice(String label, String deviceAddress)
+        {
+         await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                DevicesListbox.Items.Remove(label);
+                elementslist.Remove(deviceAddress);
+            });
+        }
+
+        private async void addDevice(String devicename, String deviceAddress, DeviceInformation device)
+        {
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    if(DevicesListbox != null) { 
+                        DevicesListbox.Items.Add(devicename);
+                        elementslist.Add(deviceAddress, device);
+                    }
+                });
+        }
+
 
         /// <summary>
         /// Event called when a new device is discovered
@@ -310,38 +480,27 @@ namespace nrf52_bledfu_win_app
         {
             //Console.WriteLine("[DeviceWatcher_Added]" + device.Name + " ID:" + device.Id);
             String deviceAddress = device.Id.Split('-')[1];
-
+            
             Debug.WriteLine("Found Device name:[" + device.Name + "] Device address:[" + deviceAddress + "]");
+
+            //check if the device has already been scanned before to add it
+            DeviceInformation dev;
+            elementslist.TryGetValue(deviceAddress, out dev);
+            if (dev == null)
+            { //device is not present yet
+                String label = device.Name + "\n" + deviceAddress;
+                addDevice(label, deviceAddress, device);
+            }
             //Guid UUID = new Guid(DFUService.DFUService_UUID); //NRF52 DFU Service
             //Guid UUID = new Guid("00001530-1212-efde-1523-785feabcd123"); //NRF52 DFU Service            
             //String service = GattDeviceService.GetDeviceSelectorFromUuid(UUID);
             String[] param = new string[] { "System.Devices.ContainerId" };
 
+            
             //foreach (var prop in device.Properties) {
             //    Console.WriteLine(prop.Key + " " + prop.Value);                        
             //}                    
             //Console.WriteLine("Scan: " + scanonly + " Given:" + given_device_address + " Found:" + deviceAddress);                        
-
-            if (!scanonly && given_device_address == deviceAddress)
-            //TODO Only for test
-            //if (!scanonly && true)
-            {
-                this.devicefound = true;
-                try
-                {
-                    //DFUService dfs =DFUService.Instance;
-                    //await dfs.InitializeServiceAsync(device);                    
-                    DFUService.Instance.initializeServiceAsync(this, bin_file, dat_file);
-                    
-                    DFUService.Instance.connectToDevice(device);
-
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                }
-
-            }
         }
 
         /// <summary>
@@ -395,26 +554,6 @@ namespace nrf52_bledfu_win_app
                 this.log("No devices", "Test");
             }
             Debug.WriteLine("Press a key to close");
-
-        }
-
-
-
-        private async void writeOnFile(String message)
-        {
-            try
-            {
-                // Create sample file; replace if exists.
-                Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                Windows.Storage.StorageFile sampleFile = await storageFolder.CreateFileAsync(logfilename, Windows.Storage.CreationCollisionOption.OpenIfExists);
-
-                await Windows.Storage.FileIO.AppendTextAsync(sampleFile, message + "\n");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("[log]" + e.Message + " " + e.StackTrace);
-
-            }
 
         }
     }

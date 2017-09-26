@@ -7,37 +7,32 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Hub Header="nRF52 OTA DFU">
-        <HubSection Header="Devices" Width="150">
-            <DataTemplate>
-                <ListBox x:Name="DevicesListBox" HorizontalAlignment="Stretch" VerticalAlignment="Top" SelectionChanged="DevicesListBox_SelectionChanged" Loaded="DevicesListBox_Load" Width="100w">
-                    <Button x:Name="Button" Content="Device1" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Left" Loaded="ButtonsLoaded" Margin="-10,-10,-10,-10" Width="100" />
-                        <!--<Button x:Name="btn3" Content="cc" RelativePanel.Below="Button" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Stretch" />-->
-                    
-                </ListBox>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="439*"/>
+            <RowDefinition Height="91*"/>
+        </Grid.RowDefinitions>
 
-                
-                <!--
-                <Grid HorizontalAlignment="Stretch" >
-                    <RelativePanel VerticalAlignment="Center" HorizontalAlignment="Stretch" >
-                        <Button x:Name="btn1" Content="btn1" RelativePanel.AlignLeftWithPanel="True" HorizontalAlignment="Left" />
-                        <Button x:Name="btn2" Content="btn2" RelativePanel.AlignHorizontalCenterWithPanel="True" HorizontalAlignment="Center" />
-                        <Button x:Name="btn3" Content="btn3" RelativePanel.RightOf="btn2" RelativePanel.LeftOf="btn4" HorizontalAlignment="Center" />
-                        <Button x:Name="btn4" Content="btn4" RelativePanel.AlignRightWithPanel="True" HorizontalAlignment="Right" />
-                    </RelativePanel>
-                </Grid>
--->
-            </DataTemplate>
-        </HubSection>
-        <HubSection Width="200">
-            <DataTemplate>
-                <Grid>
-                    <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
-                        <TextBox x:Name="textBox" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" HorizontalAlignment="Right" Width="auto" Loaded="textBoxLoaded"/>
-                    </ScrollViewer>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="40"  Text="nRF52 OTA DFU" HorizontalAlignment="Left" VerticalAlignment="Top" Height="53" Width="279"/>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+            <TextBlock Text="Devices" FontSize="25" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="33" Width="84"/>
+            <Button x:Name="scanbutton" Content="Scan" Click="Scanbutton_Click"  Width="auto" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="40,0,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="filebutton" Content="Select file" Click="Filebutton_Click"  Width="auto" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+            <TextBlock Text="Selected File:" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20,0,0,0" Loaded="texBlockFilesLoaded"/>
+        </StackPanel>
+        <ListBox Grid.Row="2" Grid.Column="0" x:Name="DevicesListBox" HorizontalContentAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="0,40,0,0" SelectionChanged="DevicesListBox_SelectionChanged" Loaded="devicesListBox_Loaded"/>
+        <ScrollViewer Grid.Row="2" Grid.Column="1"  VerticalScrollMode="Auto" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto">
+            <TextBox x:Name="textBox" Text="Arduino OTA_DFU for Nordic nRF5x" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="300" Height="400" IsReadOnly="True" Margin="0,40,0,0" Loaded="textBoxLoaded" />
+        </ScrollViewer>
+        <ProgressBar Grid.Row="3" Grid.ColumnSpan="2" Height="10" x:Name="progressbar" x:FieldModifier="public" Minimum="0" Maximum="100"  Loaded="progressbarLoaded" />
+    </Grid>
 
-                </Grid>
-            </DataTemplate>
-        </HubSection>
-    </Hub>
 </Page>

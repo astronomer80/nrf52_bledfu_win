@@ -1,0 +1,1 @@
+C:\Users\chiar\Documents\nrf52_modified_by_chiara\nrf52_bledfu_win_app\nrf52_bledfu_win_app.csproj;arm
